@@ -1,10 +1,11 @@
 import { createClient } from "contentful";
 
-process.loadEnvFile(".env");
+const CONTENTFUL_SPACE_ID = import.meta.env.CONTENTFUL_SPACE_ID || "";
+const CONTENTFUL_ACCESS_TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN || "";
 
 const client = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID || "",
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || "",
+  space: CONTENTFUL_SPACE_ID,
+  accessToken: CONTENTFUL_ACCESS_TOKEN,
 });
 
 export default client;

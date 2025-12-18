@@ -4,6 +4,11 @@ import type { APIRoute } from "astro";
 import { createMessage } from "@upyo/core";
 import { SmtpTransport } from "@upyo/smtp";
 
+const host = import.meta.env.SMTP_HOST;
+const port = import.meta.env.SMTP_PORT;
+const user = import.meta.env.SMTP_USER;
+const pass = import.meta.env.SMTP_PASS;
+
 export const POST: APIRoute = async ({ request }) => {
   const data = await request.formData();
 
@@ -16,19 +21,19 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Configure SMTP (production use your provider credentials)
   const transport = new SmtpTransport({
-    host: process.env.SMTP_HOST!,
-    port: Number(process.env.SMTP_PORT!),
+    host: host,
+    port: Number(port),
     secure: true,
     auth: {
-      user: process.env.SMTP_USER!,
-      pass: process.env.SMTP_PASS!,
+      user: user,
+      pass: pass,
     },
   });
 
   // Build the message
   const message = createMessage({
     from: `${firstName} ${lastName} <${email}>`,
-    to: process.env.SMTP_USER!,
+    to: user,
     subject: `New contact from ${firstName} ${lastName}`,
     content: {
       text: `Phone: ${phone}\n\n${messageText}`,
