@@ -16,6 +16,51 @@ const {
 const year = new Date().getFullYear();
 ---
 
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/email.min.js"
+></script>
+<script>
+  import {
+    // @ts-expect-error doesn't expect these to exist
+    PUBLIC_EMAILJS_SERVICE_ID,
+    // @ts-expect-error doesn't expect these to exist
+    PUBLIC_EMAILJS_TEMPLATE_ID,
+    // @ts-expect-error doesn't expect these to exist
+    PUBLIC_EMAILJS_PUBLIC_KEY,
+  } from "astro:env/client";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("contact-form");
+
+    // @ts-expect-error doesn't expect these to exist
+    if (!emailjs || !form || form instanceof HTMLFormElement === false) return;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = new FormData(form);
+      try {
+        // @ts-expect-error doesn't expect these to exist
+        await emailjs.send(
+          PUBLIC_EMAILJS_SERVICE_ID,
+          PUBLIC_EMAILJS_TEMPLATE_ID,
+          {
+            firstName: data.get("firstName"),
+            lastName: data.get("lastName"),
+            email: data.get("email"),
+            phone: data.get("phone"),
+            message: data.get("message"),
+          },
+          PUBLIC_EMAILJS_PUBLIC_KEY,
+        );
+        form.reset();
+      } catch (err) {
+        console.error("EmailJS error:", err);
+      }
+    });
+  });
+</script>
+
 <footer class="contact-footer">
   <div class="container">
     <div class="footer-content">
@@ -23,7 +68,7 @@ const year = new Date().getFullYear();
         <h2>{contactFormTitle}</h2>
         <p>{contactFormSubtitle}</p>
 
-        <form class="contact-form">
+        <form class="contact-form" id="contact-form">
           <div class="form-row">
             <input
               type="text"
@@ -211,37 +256,3 @@ const year = new Date().getFullYear();
     }
   }
 </style>
-
-<script type="module">
-  import emailjs from "@emailjs/browser";
-
-  const form = document.getElementById("contact-form");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const serviceId = import.meta.env.EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.EMAILJS_PUBLIC_KEY;
-
-    const data = new FormData(form);
-
-    try {
-      await emailjs.send(
-        serviceId,
-        templateId,
-        {
-          firstName: data.get("firstName"),
-          lastName: data.get("lastName"),
-          email: data.get("email"),
-          phone: data.get("phone"),
-          message: data.get("message"),
-        },
-        publicKey,
-      );
-      form.reset();
-    } catch (err) {
-      console.error("EmailJS error:", err);
-    }
-  });
-</script>

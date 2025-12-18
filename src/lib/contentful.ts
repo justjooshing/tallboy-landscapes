@@ -1,7 +1,6 @@
 import { createClient } from "contentful";
-
-const CONTENTFUL_SPACE_ID = import.meta.env.CONTENTFUL_SPACE_ID || "";
-const CONTENTFUL_ACCESS_TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN || "";
+// @ts-expect-error doesn't expect these to exist
+import { CONTENTFUL_SPACE_ID, CONTENTFUL_ACCESS_TOKEN } from "astro:env/server";
 
 const client = createClient({
   space: CONTENTFUL_SPACE_ID,

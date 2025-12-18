@@ -1,10 +1,9 @@
 interface ImportMetaEnv {
   readonly CONTENTFUL_SPACE_ID: string;
   readonly CONTENTFUL_ACCESS_TOKEN: string;
-  readonly SMTP_HOST: string;
-  readonly SMTP_PORT: string;
-  readonly SMTP_USER: string;
-  readonly SMTP_PASS: string;
+  readonly PUBLIC_EMAILJS_SERVICE_ID: string;
+  readonly PUBLIC_EMAILJS_TEMPLATE_ID: string;
+  readonly PUBLIC_EMAILJS_PUBLIC_KEY: string;
 }
 
 interface ImportMeta {
