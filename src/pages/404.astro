@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getJobs } from "../lib/jobs/index";
+
+const jobs = await getJobs();
+---
+
+<Layout title="404 — Page Not Found">
+  <main class="not-found container">
+    <div class="not-found-inner">
+      <div class="not-found-hero">
+        <h1>404</h1>
+        <p>We couldn't find the page you're looking for.</p>
+      </div>
+
+      <div class="not-found-actions">
+        <a class="btn primary" href="/">Take me home</a>
+        <a class="btn muted" href={`/jobs/${jobs[0].fields.slug}`}
+          >Browse projects</a
+        >
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 6rem 0;
+    color: var(--charcoal);
+  }
+
+  .not-found-inner {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .not-found-hero h1 {
+    font-size: 6rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--dark-earth);
+  }
+
+  .not-found-hero p {
+    font-size: 1.25rem;
+    margin: 0 0 1.5rem 0;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .not-found-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .btn.primary {
+    background: var(--sage-green);
+    color: #fff;
+  }
+
+  .btn.muted {
+    background: transparent;
+    color: var(--charcoal);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .btn:hover {
+    opacity: 0.95;
+  }
+
+  @media (min-width: 768px) {
+    .not-found-hero h1 {
+      font-size: 8rem;
+    }
+    .not-found-hero p {
+      font-size: 1.35rem;
+    }
+  }
+</style>

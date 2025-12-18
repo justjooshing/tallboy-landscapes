@@ -1,0 +1,213 @@
+---
+import { getFooterContent } from "../lib//footer/index.js";
+
+const {
+  fields: {
+    contactEmail,
+    contactFormSubtitle,
+    contactFormTitle,
+    contactPhone,
+    companyName,
+    hours,
+    serviceAreas,
+  },
+} = await getFooterContent();
+
+const year = new Date().getFullYear();
+---
+
+<footer class="contact-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-main">
+        <h2>{contactFormTitle}</h2>
+        <p>{contactFormSubtitle}</p>
+
+        <form class="contact-form" method="POST" action="/api/contact-form">
+          <div class="form-row">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              required
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="tel" name="phone" placeholder="Phone" />
+          </div>
+          <textarea
+            placeholder="Tell us about your project..."
+            rows="4"
+            required
+            name="message"></textarea>
+          <button type="submit" class="submit-btn">Get Started</button>
+        </form>
+      </div>
+
+      <div class="footer-info">
+        <div class="info-section">
+          <h3>Contact</h3>
+          <p>Email: <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
+          <p>Phone: <a href={`tel:${contactPhone}`}>{contactPhone}</a></p>
+        </div>
+
+        {
+          hours?.length ? (
+            <div class="info-section">
+              <h3>Hours</h3>
+              {hours.map((h) => (
+                <p>{h}</p>
+              ))}
+            </div>
+          ) : null
+        }
+
+        {
+          serviceAreas?.length ? (
+            <div class="info-section">
+              <h3>Service Areas</h3>
+              {serviceAreas.map((s) => (
+                <p>{s}</p>
+              ))}
+            </div>
+          ) : null
+        }
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} {companyName}. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .contact-footer {
+    background: var(--dark-earth);
+    color: var(--cream);
+    padding: 4rem 0 2rem;
+  }
+
+  .footer-content {
+    display: grid;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .footer-main h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .footer-main p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 600px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    padding: 0.875rem 1.125rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    outline: none;
+    border-color: var(--sage-green);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .submit-btn {
+    background: var(--sage-green);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s;
+    width: fit-content;
+  }
+
+  .submit-btn:hover {
+    background: var(--terracotta);
+  }
+
+  .footer-info {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+    color: var(--terracotta);
+  }
+
+  .info-section p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 0.375rem;
+  }
+
+  .footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    opacity: 0.7;
+    font-size: 0.875rem;
+  }
+
+  @media (min-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-info {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-content {
+      grid-template-columns: 1.5fr 1fr;
+      gap: 4rem;
+    }
+
+    .footer-main h2 {
+      font-size: 2.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,316 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import ContactFooter from "../../components/ContactFooter.astro";
+import { getJobBySlug, getJobs } from "../../lib/jobs/index";
+
+const { slug } = Astro.params;
+
+const jobPromise = getJobBySlug(slug);
+const jobsPromise = getJobs();
+
+const [job, jobs] = await Promise.all([jobPromise, jobsPromise]);
+
+if (!job) {
+  return Astro.redirect("/404");
+}
+
+const { title, location, showcaseImage, descriptions, images } = job.fields;
+
+interface Content {
+  description?: { content: string };
+  image?: { url: string; alt: string };
+}
+
+// Create alternating content sections
+const contentSections: Content[] = [];
+
+if (descriptions && images) {
+  const descriptionSections = descriptions
+    .split("\n\n")
+    .reduce((acc: string[], desc) => {
+      const trimmedDesc = desc.trim();
+      if (trimmedDesc) {
+        acc.push(trimmedDesc);
+      }
+      return acc;
+    }, []);
+
+  const maxLength = Math.max(descriptionSections.length, images.length);
+  for (let i = 0; i < maxLength; i++) {
+    // add both of these into the single array
+    const description = descriptionSections[i];
+    const image = images[i];
+    contentSections.push({
+      ...(description && {
+        description: { content: description },
+      }),
+      ...(image && {
+        image: {
+          url: image.fields.file?.url || "",
+          alt: image.fields.title || `${title} - Image ${i + 1}`,
+        },
+      }),
+    });
+  }
+}
+
+export async function getStaticPaths() {
+  const jobs = await getJobs();
+  return jobs.map((job) => ({
+    params: { slug: job.fields.slug },
+  }));
+}
+
+// Previous / Next navigation (loops)
+const currentIndex = jobs.findIndex((j) => j.fields.slug === slug);
+const total = jobs.length || 1;
+const prevIndex = (currentIndex - 1 + total) % total;
+const nextIndex = (currentIndex + 1) % total;
+const navigate = (index: number) => jobs[index]?.fields?.slug || slug;
+const prevSlug = navigate(prevIndex);
+const nextSlug = navigate(nextIndex);
+
+---
+<Layout
+  title={`${title} - Tallboy`}
+  description={`${title} project in ${location}`}
+>
+  <Header />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="job-hero">
+      <div class="job-hero-image-wrapper">
+        <img
+          src={showcaseImage?.fields.file?.url ||
+            "/placeholder.svg?height=600&width=1600&query=landscaping project"}
+          alt={title}
+          class="job-hero-image"
+        />
+        <div class="job-hero-overlay"></div>
+      </div>
+      <div class="job-hero-content">
+        <div class="container">
+          <h1 class="job-title">{title}</h1>
+          <p class="job-location">{location}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project Details -->
+    <section class="job-details">
+      <div class="container">
+        {
+          contentSections.map(({ description, image }, index) => (
+            <div class:list={["content-section", { reverse: index % 2 === 0,  singleColumn: !description || !image}]}>
+              {description ? (
+                <div class="text-content">
+                  <p>{description.content}</p>
+                </div>
+              ) : null}
+              {image ? (
+                <div class="image-content">
+                  <img
+                    src={image?.url || "/placeholder.svg"}
+                    alt={image?.alt}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+     {
+      total > 1 ?
+       <section class="job-nav">
+      <div class="container">
+        <div class="job-nav-inner">
+          <a class="job-nav-btn prev" href={`/jobs/${prevSlug}`}>← Previous</a>
+          <a class="job-nav-btn next" href={`/jobs/${nextSlug}`}>Next →</a>
+        </div>
+      </div>
+    </section>
+   : null }
+    <ContactFooter />
+  </main>
+</Layout>
+
+<style>
+  /* Job Hero Section */
+  .job-hero {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  .job-hero-image-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .job-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .job-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.2),
+      rgba(45, 58, 46, 0.7)
+    );
+  }
+
+  .job-hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    color: white;
+    padding: 3rem 0;
+  }
+
+  .job-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-wrap: balance;
+  }
+
+  .job-location {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .job-location::before {
+    content: "📍";
+  }
+
+  /* Job Details Section */
+  .job-details {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .content-section {
+    margin-bottom: 3rem;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .text-content {
+    padding: 2rem;
+    background: var(--cream);
+    border-radius: 8px;
+    height: 100%;
+  }
+
+  .text-content p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--charcoal);
+  }
+
+  .image-content {
+    height: 100%
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .image-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .job-title {
+      font-size: 3.5rem;
+    }
+
+    .job-location {
+      font-size: 1.5rem;
+    }
+
+    .content-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .content-section.reverse {
+      direction: rtl;
+    }
+
+    .content-section.reverse > * {
+       direction: ltr;
+    }
+
+    .singleColumn {
+      grid-template-columns: 1fr 
+    }
+
+    .text-content {
+      padding: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .job-title {
+      font-size: 4rem;
+    }
+
+    .content-section {
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+  }
+
+  .job-nav {
+    padding: 2rem 0 3rem;
+    background: #ffffff;
+  }
+
+  .job-nav-inner {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+
+  .job-nav-btn {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    background: var(--sage-green);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .job-nav-btn.prev {
+    background: transparent;
+    color: var(--charcoal);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .job-nav-btn.next {
+    background: var(--sage-green);
+  }
+</style>

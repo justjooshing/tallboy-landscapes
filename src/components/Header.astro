@@ -1,0 +1,149 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<script type="module" is:inline={false} src="/header-menu.js"></script>
+<script type="module" is:inline={false} src="/homepage-intercept.js"></script>
+
+<header class="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="logo">
+        <span class="logo-text">Tallboy Landscapes</span>
+      </a>
+      <ul class="nav-links" role="menu">
+        <li>
+          <a href="/" class:list={["nav-link", { active: currentPath === "/" }]}
+            >Home</a
+          >
+        </li>
+        <li><a href="/#about" class="nav-link">About</a></li>
+        <li><a href="/#services" class="nav-link">Services</a></li>
+        <li><a href="/#contact" class="nav-link cta">Contact Us</a></li>
+      </ul>
+      <button
+        class="mobile-toggle"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    background: rgba(245, 243, 240, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    border-bottom: 1px solid rgba(107, 124, 89, 0.1);
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 0;
+  }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dark-earth);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: none;
+    list-style: none;
+    gap: 2.5rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Mobile open state */
+  .nav-links.active {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: rgba(245, 243, 240, 0.98);
+    padding: 1rem 1.25rem 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .nav-link {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    transition: color 0.3s;
+    position: relative;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--sage-green);
+  }
+
+  .nav-link.cta {
+    background: var(--sage-green);
+    color: white;
+    padding: 0.625rem 1.5rem;
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+
+  .nav-link.cta:hover {
+    background: var(--dark-earth);
+    color: white;
+  }
+
+  .mobile-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+  }
+
+  .mobile-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--dark-earth);
+    transition: all 0.3s;
+  }
+
+  .mobile-toggle.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .mobile-toggle.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+
+  .mobile-toggle.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+    }
+
+    .mobile-toggle {
+      display: none;
+    }
+  }
+</style>

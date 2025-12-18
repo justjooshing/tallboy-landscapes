@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tallboy Landscapes Website
+
+A modern, mobile-first landscapes website built with Astro SSG and Contentful CMS.
+
+## Features
+
+- 🚀 Astro SSG with incremental site regeneration
+- 📝 Contentful CMS integration
+- 📱 Mobile-first responsive design
+- 🎨 Beautiful earthy color scheme
+- ⚡ Fast page loads with optimized images
+- 🔄 Dynamic content from Contentful
+
+## Contentful Setup
+
+### Required Content Types
+
+#### 1. Home Page (`homePage`)
+
+- **Hero Image** (Media): Main hero image
+- **Hero Title** (Short text): Main headline
+- **Hero Subtitle** (Short text): Subheadline
+- **About Title** (Short text)
+- **About Description** (Long text)
+- **Services Title** (Short text)
+- **Testimonial Title** (Short text)
+
+#### 2. Job (`job`)
+
+- **Title** (Short text): Project name
+- **Slug** (Short text): URL-friendly identifier
+- **Location** (Short text): Project location
+- **Hero Image** (Media): Main project image
+- **Is Hero Image** (Boolean): Check to feature on homepage
+- **Descriptions** (Array of Long text): Project descriptions
+- **Images** (Array of Media): Project gallery images
+
+#### 3. Service (`service`)
+
+- **Title** (Short text): Service name
+- **Description** (Long text): Service description
+- **Icon** (Short text): Emoji or icon
+
+#### 4. Testimonial (`testimonial`)
+
+- **Name** (Short text): Client name
+- **Content** (Long text): Testimonial text
+- **Role** (Short text): Client role/title (optional)
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone and install dependencies:**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Set up environment variables:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   - Copy `.env.example` to `.env`
+   - Add your Contentful Space ID and Access Token
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Run the development server:**
 
-## Learn More
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/src/pages/` - Route pages (index, job detail pages)
+- `/src/components/` - Reusable components (Header, Footer)
+- `/src/layouts/` - Page layouts
+- `/src/lib/` - Contentful client and utilities
+- `/src/styles/` - Global styles
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This site is optimized for deployment on Vercel with automatic rebuilds when Contentful content changes (using webhooks).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design Features
+
+- Earthy color palette (sage green, terracotta, cream)
+- Playfair Display for headings
+- Inter for body text
+- Alternating image/text layouts on job pages
+- Smooth animations and transitions
+- Accessible and SEO-friendly
