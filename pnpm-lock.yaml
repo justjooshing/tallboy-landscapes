@@ -11,25 +11,16 @@ importers:
       '@astrojs/cloudflare':
         specifier: ^12.6.12
         version: 12.6.12(@types/node@25.0.3)(astro@5.16.6(@types/node@25.0.3)(rollup@4.53.5)(typescript@5.9.3))
-      '@upyo/core':
-        specifier: ^0.3.3
-        version: 0.3.3
-      '@upyo/smtp':
-        specifier: ^0.3.3
-        version: 0.3.3(@upyo/core@0.3.3)
+      '@emailjs/browser':
+        specifier: ^4.4.1
+        version: 4.4.1
       astro:
         specifier: 5.16.6
         version: 5.16.6(@types/node@25.0.3)(rollup@4.53.5)(typescript@5.9.3)
       contentful:
         specifier: 11.10.1
         version: 11.10.1
-      tailwindcss-animate:
-        specifier: 1.0.7
-        version: 1.0.7(tailwindcss@4.1.18)
     devDependencies:
-      tailwindcss:
-        specifier: 4.1.18
-        version: 4.1.18
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -138,6 +129,10 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@emailjs/browser@4.4.1':
+    resolution: {integrity: sha512-DGSlP9sPvyFba3to2A50kDtZ+pXVp/0rhmqs2LmbMS3I5J8FSOgLwzY2Xb4qfKlOVHh29EAutLYwe5yuEZmEFg==}
+    engines: {node: '>=14.0.0'}
 
   '@emnapi/runtime@1.7.1':
     resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
@@ -891,16 +886,6 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
-
-  '@upyo/core@0.3.3':
-    resolution: {integrity: sha512-RPN/yEPuvqUGDq7HoHVVKj++3ehKOrfiUHRJeu6xKGaRO2JYVoNJckjKYV6IFNgJPNrcoD91Jgq4gZu1QAxNOQ==}
-    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
-
-  '@upyo/smtp@0.3.3':
-    resolution: {integrity: sha512-VPUVN6CUvTItSuxTTpcp8Uq6okHt8qawjJFFc+c2M2Q3DUYPLCaOBsoK20H9Lv6fPKZ776YN2Dsmqr6VpI/6UQ==}
-    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
-    peerDependencies:
-      '@upyo/core': 0.3.3
 
   '@vercel/stega@0.1.2':
     resolution: {integrity: sha512-P7mafQXjkrsoyTRppnt0N21udKS9wUmLXHRyP9saLXLHw32j/FgUJ3FscSWgvSqRs4cj7wKZtwqJEvWJ2jbGmA==}
@@ -1857,14 +1842,6 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  tailwindcss-animate@1.0.7:
-    resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders'
-
-  tailwindcss@4.1.18:
-    resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
-
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
 
@@ -2296,6 +2273,8 @@ snapshots:
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  '@emailjs/browser@4.4.1': {}
 
   '@emnapi/runtime@1.7.1':
     dependencies:
@@ -2796,12 +2775,6 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@ungap/structured-clone@1.3.0': {}
-
-  '@upyo/core@0.3.3': {}
-
-  '@upyo/smtp@0.3.3(@upyo/core@0.3.3)':
-    dependencies:
-      '@upyo/core': 0.3.3
 
   '@vercel/stega@0.1.2': {}
 
@@ -4221,12 +4194,6 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.4.3
-
-  tailwindcss-animate@1.0.7(tailwindcss@4.1.18):
-    dependencies:
-      tailwindcss: 4.1.18
-
-  tailwindcss@4.1.18: {}
 
   tiny-inflate@1.0.3: {}
 

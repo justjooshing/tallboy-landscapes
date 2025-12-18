@@ -23,7 +23,7 @@ const year = new Date().getFullYear();
         <h2>{contactFormTitle}</h2>
         <p>{contactFormSubtitle}</p>
 
-        <form class="contact-form" method="POST" action="/api/contact-form">
+        <form class="contact-form">
           <div class="form-row">
             <input
               type="text"
@@ -211,3 +211,37 @@ const year = new Date().getFullYear();
     }
   }
 </style>
+
+<script type="module">
+  import emailjs from "@emailjs/browser";
+
+  const form = document.getElementById("contact-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const serviceId = import.meta.env.EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.EMAILJS_PUBLIC_KEY;
+
+    const data = new FormData(form);
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          email: data.get("email"),
+          phone: data.get("phone"),
+          message: data.get("message"),
+        },
+        publicKey,
+      );
+      form.reset();
+    } catch (err) {
+      console.error("EmailJS error:", err);
+    }
+  });
+</script>
