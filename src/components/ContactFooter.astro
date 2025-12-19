@@ -38,6 +38,13 @@ const year = new Date().getFullYear();
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      // Honeypot check: abort if hidden checkbox is checked (likely a bot)
+      const hp = form.querySelector('input[name="hpBox"]');
+      if (hp instanceof HTMLInputElement && hp.checked) {
+        console.warn("Honeypot triggered — aborting submit");
+        return;
+      }
+
       const data = new FormData(form);
       try {
         // @ts-expect-error doesn't expect these to exist
@@ -69,6 +76,16 @@ const year = new Date().getFullYear();
         <p>{contactFormSubtitle}</p>
 
         <form class="contact-form" id="contact-form">
+          <div class="honeypot" aria-hidden="true">
+            <label for="hp-box">Leave this unchecked</label>
+            <input
+              type="checkbox"
+              name="hpBox"
+              id="hp-box"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
           <div class="form-row">
             <input
               type="text"
@@ -254,5 +271,15 @@ const year = new Date().getFullYear();
     .footer-main h2 {
       font-size: 2.5rem;
     }
+  }
+
+  /* Honeypot visually hidden off-screen so normal users won't interact */
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 </style>
