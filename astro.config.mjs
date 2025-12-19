@@ -2,7 +2,7 @@ import { defineConfig, envField } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 
 export default defineConfig({
-  output: "static",
+  output: import.meta.env.ASTRO_OUTPUT,
   adapter: cloudflare({ imageService: "compile" }),
   env: {
     validateSecrets: true,
@@ -26,6 +26,10 @@ export default defineConfig({
       CONTENTFUL_ACCESS_TOKEN: envField.string({
         context: "server",
         access: "secret",
+      }),
+      CONTENTFUL_HOST: envField.string({
+        context: "server",
+        access: "public",
       }),
     },
   },

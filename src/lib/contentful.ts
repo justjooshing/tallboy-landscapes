@@ -1,9 +1,16 @@
 import { createClient } from "contentful";
-// @ts-expect-error doesn't expect these to exist
-import { CONTENTFUL_SPACE_ID, CONTENTFUL_ACCESS_TOKEN } from "astro:env/server";
+import {
+  // @ts-expect-error doesn't expect these to exist
+  CONTENTFUL_SPACE_ID,
+  // @ts-expect-error doesn't expect these to exist
+  CONTENTFUL_ACCESS_TOKEN,
+  // @ts-expect-error doesn't expect these to exist
+  CONTENTFUL_HOST,
+} from "astro:env/server";
 
 const client = createClient({
   space: CONTENTFUL_SPACE_ID,
+  host: CONTENTFUL_HOST,
   accessToken: CONTENTFUL_ACCESS_TOKEN,
 });
 
