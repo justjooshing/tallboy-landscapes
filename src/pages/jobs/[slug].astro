@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import ContactFooter from "../../components/ContactFooter.astro";
 import { getJobBySlug, getJobs } from "../../lib/jobs/index";
+import BeforeAfterImage from "../../components/BeforeAfterImage.astro";
 
 const { slug } = Astro.params;
 
@@ -15,7 +16,7 @@ if (!job) {
   return Astro.redirect("/404");
 }
 
-const { title, location, showcaseImage, descriptions, images } = job.fields;
+const { title, location, showcaseImage, descriptions, images, beforeafterImages = [] } = job.fields;
 
 interface Content {
   description?: { content: string };
@@ -122,9 +123,14 @@ const nextSlug = navigate(nextIndex);
         }
       </div>
     </section>
+{
+beforeafterImages.length > 1 ? <BeforeAfterImage
+  before={beforeafterImages.at(0)?.fields.file?.url}
+  after={beforeafterImages.at(-1)?.fields.file?.url}
+  /> : null
+}
 
-    <!-- Contact Section -->
-     {
+    {
       total > 1 ?
        <section class="job-nav">
       <div class="container">
@@ -135,6 +141,8 @@ const nextSlug = navigate(nextIndex);
       </div>
     </section>
    : null }
+
+   <!-- Contact Section -->
     <ContactFooter />
   </main>
 </Layout>

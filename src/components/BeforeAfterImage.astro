@@ -1,0 +1,96 @@
+---
+const {
+  before,
+  after,
+  altBefore = "Before",
+  altAfter = "After",
+  height = "400px",
+} = Astro.props;
+---
+
+<script is:inline>
+  window.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-before-after]").forEach((wrapper) => {
+      const slider = wrapper.querySelector("input");
+      const afterImg = wrapper.querySelector(".ba-after");
+      const handle = wrapper.querySelector(".ba-handle");
+
+      slider.addEventListener("input", (e) => {
+        const value = e.target.value;
+        afterImg.style.clipPath = `inset(0 0 0 ${value}%)`;
+        handle.style.left = `${value}%`;
+      });
+    });
+  });
+</script>
+
+<div class="ba-wrapper" style={`--height: ${height}`} data-before-after>
+  <img src={before} alt={altBefore} />
+  <img src={after} alt={altAfter} class="ba-after" />
+
+  <input
+    type="range"
+    min="0"
+    max="100"
+    value="50"
+    class="ba-slider"
+    aria-label="Compare before and after"
+  />
+
+  <div class="ba-handle">⇆</div>
+</div>
+
+<style>
+  .ba-wrapper {
+    position: relative;
+    width: 100%;
+    height: var(--height);
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .ba-wrapper img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .ba-after {
+    clip-path: inset(0 0 0 50%);
+  }
+
+  .ba-slider {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+  }
+
+  .ba-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 4px;
+    height: 100%;
+    background: white;
+    box-shadow: 0 0 0 9999px rgba(255, 255, 255, 0.2);
+  }
+
+  .ba-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 999px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+</style>

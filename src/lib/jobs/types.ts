@@ -9,5 +9,6 @@ export interface JobResolved {
     showcaseImage?: Asset;
     descriptions: string;
     images: Asset[];
+    beforeafterImages?: Asset[];
   };
 }
