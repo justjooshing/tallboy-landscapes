@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build:preview": "astro build --config=astro.config.server.mjs",
+    "build": "astro build --config=astro.config.static.mjs",
     "preview": "astro preview",
     "start": "node dist/server/entry.mjs"
   },

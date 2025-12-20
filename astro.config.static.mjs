@@ -2,7 +2,7 @@ import { defineConfig, envField } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 
 export default defineConfig({
-  output: import.meta.env.ASTRO_OUTPUT,
+  output: "static",
   adapter: cloudflare({ imageService: "compile" }),
   env: {
     validateSecrets: true,
