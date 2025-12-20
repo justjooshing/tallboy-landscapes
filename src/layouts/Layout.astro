@@ -1,8 +1,17 @@
 ---
+import { schema, facebookPage, instagramPage } from "../constants/schema.js";
+
 const {
   title,
   description = "Professional landscapes services transforming outdoor spaces",
 } = Astro.props;
+
+const url = `${Astro.site}${Astro.url.pathname}`;
+const image = "https://www.tallboylandscapes.com/images/tallboylandscapes.jpg";
+
+// We don't want the preview site to be indexed
+const site = typeof Astro.site === "string" ? Astro.site : Astro.site?.href;
+const isPreview = site === "https://preview.tallboylandscapes.com/";
 ---
 
 <!doctype html>
@@ -18,8 +27,26 @@ const {
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
       rel="stylesheet"
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content={title} />
+    <meta property="og:locale" content="en_AU" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <link rel="canonical" href={url} />
+    <link rel="me" href={facebookPage} />
+    <link rel="me" href={instagramPage} />
     <meta name="generator" content={Astro.generator} />
+    {isPreview && <meta name="robots" content="noindex,nofollow" />}
     <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
     <slot />

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --config=astro.config.server.mjs",
     "build:preview": "astro build --config=astro.config.server.mjs",
     "build": "astro build --config=astro.config.static.mjs",
     "preview": "astro preview",
