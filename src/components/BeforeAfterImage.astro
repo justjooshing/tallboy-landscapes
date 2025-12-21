@@ -8,22 +8,6 @@ const {
 } = Astro.props;
 ---
 
-<script is:inline>
-  window.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("[data-before-after]").forEach((wrapper) => {
-      const slider = wrapper.querySelector("input");
-      const afterImg = wrapper.querySelector(".ba-after");
-      const handle = wrapper.querySelector(".ba-handle");
-
-      slider.addEventListener("input", (e) => {
-        const value = e.target.value;
-        afterImg.style.clipPath = `inset(0 0 0 ${value}%)`;
-        handle.style.left = `${value}%`;
-      });
-    });
-  });
-</script>
-
 <div class="ba-wrapper" style={`--height: ${height}`} data-before-after>
   <img src={before} alt={altBefore} />
   <img src={after} alt={altAfter} class="ba-after" />
@@ -94,3 +78,19 @@ const {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 </style>
+
+<script>
+  document.querySelectorAll("[data-before-after]").forEach((wrapper) => {
+    const slider = wrapper.querySelector<HTMLInputElement>("input");
+    const afterImg = wrapper.querySelector<HTMLImageElement>(".ba-after");
+    const handle = wrapper.querySelector<HTMLDivElement>(".ba-handle");
+
+    if (!slider || !afterImg || !handle) return;
+
+    slider.addEventListener("input", () => {
+      const value = slider.valueAsNumber;
+      afterImg.style.clipPath = `inset(0 0 0 ${value}%)`;
+      handle.style.left = `${value}%`;
+    });
+  });
+</script>

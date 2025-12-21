@@ -44,7 +44,7 @@ export const schema = {
   logo: "https://www.tallboylandscapes.com/images/tallboylandscapes.jpg",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "27 Longwarry Rd",
+    streetAddress: "Longwarry Rd",
     addressLocality: "Drouin",
     addressRegion: "VIC",
     postalCode: "3818",
@@ -52,8 +52,8 @@ export const schema = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: -38.1271594,
-    longitude: 145.8435675,
+    latitude: -38.127708,
+    longitude: 145.84453,
   },
   openingHoursSpecification: [
     {
