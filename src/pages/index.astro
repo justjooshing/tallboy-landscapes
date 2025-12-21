@@ -17,24 +17,14 @@ const stats = await getStats();
 // Fallback content if Contentful is not configured
 const heroImage =
   homeContent?.fields.heroImage?.fields.file?.url ||
-  "/placeholder.svg?height=800&width=1600";
-const heroTitle =
-  homeContent?.fields.heroTitle || "Transform Your Outdoor Space";
-const heroSubtitle =
-  homeContent?.fields.heroSubtitle ||
-  "Professional landscaping services that bring your vision to life";
-const aboutTitle = homeContent?.fields.aboutTitle || "About Tallboy";
-const aboutDescriptions = homeContent?.fields.aboutDescription.length
-  ? homeContent?.fields.aboutDescription.split("\n")
-  : [
-      "With over 15 years of experience, we specialize in creating stunning outdoor environments that enhance your property's beauty and value. Our team of expert landscapers combines creativity with technical expertise to deliver exceptional results.",
-      " Every project is unique, and we work closely with you to understand your needs, preferences, and budget. From initial consultation to final implementation, we're committed to exceeding your expectations.",
-    ];
-const servicesTitle = homeContent?.fields.servicesTitle || "Our Services";
-const testimonialTitle =
-  homeContent?.fields.testimonialTitle || "What Our Clients Say";
-const featuredJobsTitle =
-  homeContent?.fields.featuredJobsTitle || "Featured Projects";
+  "/images/tallboylandscapes.jpg";
+const heroTitle = homeContent?.fields.heroTitle;
+const heroSubtitle = homeContent?.fields.heroSubtitle;
+const aboutTitle = homeContent?.fields.aboutTitle;
+const aboutDescriptions = homeContent?.fields.aboutDescription.split("\n\n");
+const servicesTitle = homeContent?.fields.servicesTitle;
+const testimonialTitle = homeContent?.fields.testimonialTitle;
+const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
 ---
 
 <Layout title="Tallboy Landscapes - Professional Landscaping Services">
@@ -67,13 +57,13 @@ const featuredJobsTitle =
           <div class="about-text">
             <h2>{aboutTitle}</h2>
             {
-              aboutDescriptions.map((aboutDescription) => (
+              aboutDescriptions?.map((aboutDescription) => (
                 <p>{aboutDescription}</p>
               ))
             }
           </div>
           {
-            stats.length ? (
+            !!stats?.length ? (
               <div class="about-stats">
                 {stats.map(({ fields: { value, label } }) => (
                   <div class="stat">
@@ -90,7 +80,7 @@ const featuredJobsTitle =
 
     <!-- Services Section -->
     {
-      services.length > 0 ? (
+      !!services?.length ? (
         <section id="services" class="services">
           <div class="container">
             <h2 class="section-title">{servicesTitle}</h2>
@@ -110,7 +100,7 @@ const featuredJobsTitle =
 
     <!-- Featured Projects Preview -->
     {
-      heroJobs.length > 0 ? (
+      !!heroJobs.length ? (
         <section class="featured-projects">
           <div class="container">
             <h2 class="section-title">{featuredJobsTitle}</h2>
@@ -141,7 +131,7 @@ const featuredJobsTitle =
 
     <!-- Testimonials Section -->
     {
-      testimonials.length > 0 && (
+      !!testimonials.length && (
         <section class="testimonials">
           <div class="container">
             <h2 class="section-title">{testimonialTitle}</h2>

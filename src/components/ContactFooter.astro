@@ -1,102 +1,111 @@
 ---
 import { getFooterContent } from "../lib//footer/index.js";
 
-const {
-  fields: {
-    contactEmail,
-    contactFormSubtitle,
-    contactFormTitle,
-    contactPhone,
-    companyName,
-    hours,
-    serviceAreas,
-  },
-} = await getFooterContent();
+const footerContent = await getFooterContent();
 
 const year = new Date().getFullYear();
+
+const {
+  contactEmail,
+  contactFormSubtitle,
+  contactFormTitle,
+  contactPhone,
+  companyName,
+  hours,
+  serviceAreas,
+} = footerContent?.fields || {};
 ---
 
-<footer class="contact-footer">
-  <div class="container">
-    <div class="footer-content">
-      <div class="footer-main">
-        <h2>{contactFormTitle}</h2>
-        <p>{contactFormSubtitle}</p>
+{
+  !footerContent ? null : (
+    <footer class="contact-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-main">
+            <h2>{contactFormTitle}</h2>
+            <p>{contactFormSubtitle}</p>
 
-        <form class="contact-form" id="contact-form">
-          <div class="honeypot" aria-hidden="true">
-            <label for="hp-box">Leave this unchecked</label>
-            <input
-              type="checkbox"
-              name="hpBox"
-              id="hp-box"
-              tabindex="-1"
-              autocomplete="off"
-            />
+            <form class="contact-form" id="contact-form">
+              <div class="honeypot" aria-hidden="true">
+                <label for="hp-box">Leave this unchecked</label>
+                <input
+                  type="checkbox"
+                  name="hpBox"
+                  id="hp-box"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="form-row">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  required
+                />
+              </div>
+              <div class="form-row">
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="tel" name="phone" placeholder="Phone" />
+              </div>
+              <textarea
+                placeholder="Tell us about your project..."
+                rows="4"
+                required
+                name="message"
+              />
+              <button type="submit" class="submit-btn">
+                Get Started
+              </button>
+            </form>
           </div>
-          <div class="form-row">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              required
-            />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              required
-            />
-          </div>
-          <div class="form-row">
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="tel" name="phone" placeholder="Phone" />
-          </div>
-          <textarea
-            placeholder="Tell us about your project..."
-            rows="4"
-            required
-            name="message"></textarea>
-          <button type="submit" class="submit-btn">Get Started</button>
-        </form>
-      </div>
 
-      <div class="footer-info">
-        <div class="info-section">
-          <h3>Contact</h3>
-          <p>Email: <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
-          <p>Phone: <a href={`tel:${contactPhone}`}>{contactPhone}</a></p>
+          <div class="footer-info">
+            <div class="info-section">
+              <h3>Contact</h3>
+              <p>
+                Email: <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+              </p>
+              <p>
+                Phone: <a href={`tel:${contactPhone}`}>{contactPhone}</a>
+              </p>
+            </div>
+
+            {hours?.length ? (
+              <div class="info-section">
+                <h3>Hours</h3>
+                {hours.map((h) => (
+                  <p>{h}</p>
+                ))}
+              </div>
+            ) : null}
+
+            {serviceAreas?.length ? (
+              <div class="info-section">
+                <h3>Service Areas</h3>
+                {serviceAreas.map((s) => (
+                  <p>{s}</p>
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        {
-          hours?.length ? (
-            <div class="info-section">
-              <h3>Hours</h3>
-              {hours.map((h) => (
-                <p>{h}</p>
-              ))}
-            </div>
-          ) : null
-        }
-
-        {
-          serviceAreas?.length ? (
-            <div class="info-section">
-              <h3>Service Areas</h3>
-              {serviceAreas.map((s) => (
-                <p>{s}</p>
-              ))}
-            </div>
-          ) : null
-        }
+        <div class="footer-bottom">
+          <p>
+            &copy; {year} {companyName}. All rights reserved.
+          </p>
+        </div>
       </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; {year} {companyName}. All rights reserved.</p>
-    </div>
-  </div>
-</footer>
+    </footer>
+  )
+}
 
 <style>
   .contact-footer {
