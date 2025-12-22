@@ -1,22 +1,18 @@
 ---
-const {
-  before,
-  after,
-  altBefore = "Before",
-  altAfter = "After",
-  height = "400px",
-} = Astro.props;
+const { images, altBefore = "Before", altAfter = "After" } = Astro.props;
+
+const [before, after] = [images[0], images.at(-1)];
 ---
 
-<div class="ba-wrapper" style={`--height: ${height}`} data-before-after>
-  <img src={before} alt={altBefore} />
-  <img src={after} alt={altAfter} class="ba-after" />
+<div class="ba-wrapper" data-before-after>
+  <img src={before.fields.file.url} alt={altBefore} />
+  <img src={after.fields.file.url} alt={altAfter} class="ba-after" />
 
   <input
     type="range"
     min="0"
     max="100"
-    value="50"
+    value="10"
     class="ba-slider"
     aria-label="Compare before and after"
   />
@@ -28,23 +24,22 @@ const {
   .ba-wrapper {
     position: relative;
     width: 100%;
-    height: var(--height);
+    aspect-ratio: 4/3;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 12px 12px 0 0;
   }
 
   .ba-wrapper img {
     position: absolute;
     inset: 0;
     width: 100%;
-    height: 100%;
     object-fit: cover;
     user-select: none;
     pointer-events: none;
   }
 
   .ba-after {
-    clip-path: inset(0 0 0 50%);
+    clip-path: inset(0 0 0 10%);
   }
 
   .ba-slider {
@@ -53,7 +48,7 @@ const {
     width: 100%;
     background: transparent;
     appearance: none;
-    cursor: ew-resize;
+    cursor: grab;
   }
 
   .ba-slider::-webkit-slider-thumb {
@@ -67,7 +62,7 @@ const {
   .ba-handle {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 10%;
     transform: translate(-50%, -50%);
     background: white;
     border-radius: 999px;
@@ -92,5 +87,18 @@ const {
       afterImg.style.clipPath = `inset(0 0 0 ${value}%)`;
       handle.style.left = `${value}%`;
     });
+
+    const setGrabbing = () => {
+      slider.style.cursor = "grabbing";
+    };
+
+    const unsetGrabbing = () => {
+      slider.style.cursor = "grab";
+    };
+
+    slider.addEventListener("pointerdown", setGrabbing);
+    document.addEventListener("pointerup", unsetGrabbing);
+    slider.addEventListener("pointercancel", unsetGrabbing);
+    slider.addEventListener("mouseleave", unsetGrabbing);
   });
 </script>

@@ -120,13 +120,6 @@ const nextSlug = navigate(nextIndex);
         }
       </div>
     </section>
-{
- beforeafterImages.length > 1 ? <BeforeAfterImage
-  before={beforeafterImages.at(0)?.fields.file?.url}
-  after={beforeafterImages.at(-1)?.fields.file?.url}
-  /> : null
-}
-
     {
       total > 1 ?
        <section class="job-nav">
@@ -206,12 +199,17 @@ const nextSlug = navigate(nextIndex);
 
   /* Job Details Section */
   .job-details {
-    padding: 4rem 0;
+    padding: 2rem 0;
     background: white;
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
   }
 
   .content-section {
-    margin-bottom: 3rem;
     display: grid;
     gap: 2rem;
     align-items: center;
@@ -287,7 +285,7 @@ const nextSlug = navigate(nextIndex);
   }
 
   .job-nav {
-    padding: 2rem 0 3rem;
+    padding: 1rem 0;
     background: #ffffff;
   }
 

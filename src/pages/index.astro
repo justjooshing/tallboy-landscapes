@@ -6,6 +6,7 @@ import { getServices } from "../lib/services/index";
 import { getTestimonials } from "../lib/testimonials/index";
 import { getHeroJobs } from "../lib/jobs/index";
 import { getStats } from "../lib/stats/index";
+import BeforeAfterImage from "../components/BeforeAfterImage.astro";
 
 const homeContent = await getHomePageContent();
 const services = await getServices();
@@ -103,22 +104,34 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
             <h2 class="section-title">{featuredJobsTitle}</h2>
             <div class="projects-grid">
               {heroJobs.map((job) => (
-                <a href={`/jobs/${job.fields.slug}`} class="project-card">
-                  <div class="project-image-wrapper">
-                    <img
-                      src={
-                        job.fields.showcaseImage?.fields.file?.url ||
-                        "/placeholder.svg"
-                      }
-                      alt={job.fields.title}
-                      class="project-image"
-                    />
-                  </div>
-                  <div class="project-info">
-                    <h3>{job.fields.title}</h3>
-                    <p class="project-location">{job.fields.location}</p>
-                  </div>
-                </a>
+                <div class="project-card">
+                  {job.fields.beforeafterImages ? (
+                    <BeforeAfterImage images={job.fields.beforeafterImages} />
+                    <a href={`/jobs/${job.fields.slug}`}>
+                       <div class="project-info">
+                        <h3>{job.fields.title}</h3>
+                        <p class="project-location">{job.fields.location}</p>
+                      </div>
+                    </a>
+                  ) : (
+                    <a href={`/jobs/${job.fields.slug}`}>
+                      <div class="project-image-wrapper">
+                        <img
+                          src={
+                            job.fields.showcaseImage?.fields.file?.url ||
+                            "/placeholder.svg"
+                          }
+                          alt={job.fields.title}
+                          class="project-image"
+                        />
+                      </div>
+                      <div class="project-info">
+                        <h3>{job.fields.title}</h3>
+                        <p class="project-location">{job.fields.location}</p>
+                      </div>
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </div>
