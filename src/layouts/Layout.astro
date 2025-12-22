@@ -37,12 +37,19 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
       sizes="32x32"
       media="(prefers-color-scheme: light)"
     />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/Inter-VariableFont_opsz,wght.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/PlayfairDisplay-VariableFont_wght.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
     />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

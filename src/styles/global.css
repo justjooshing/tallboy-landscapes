@@ -4,6 +4,18 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "InterLocal";
+  src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PlayfairDisplayLocal";
+  src: url("/fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+  font-display: swap;
+}
+
 :root {
   --sage-green: #6b7c59;
   --dark-earth: #2d3a2e;
@@ -11,8 +23,9 @@
   --terracotta: #d4a574;
   --charcoal: #3a3a3a;
 
-  --font-display: "Playfair Display", serif;
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "PlayfairDisplayLocal", serif;
+  --font-body: "InterLocal", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
 html {
