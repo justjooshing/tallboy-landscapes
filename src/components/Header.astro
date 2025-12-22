@@ -6,17 +6,24 @@ const currentPath = Astro.url.pathname;
   <div class="container">
     <nav class="nav">
       <a href="/" class="logo">
+        <img src="/favicon-light.png" />
         <span class="logo-text">Tallboy Landscapes</span>
       </a>
       <ul class="nav-links" role="menu">
-        <li>
+        <li role="menuitem">
           <a href="/" class:list={["nav-link", { active: currentPath === "/" }]}
             >Home</a
           >
         </li>
-        <li><a href="/#about" class="nav-link">About</a></li>
-        <li><a href="/#services" class="nav-link">Services</a></li>
-        <li><a href="/#contact" class="nav-link cta">Contact Us</a></li>
+        <li role="menuitem">
+          <a href="/#about" class="nav-link">About</a>
+        </li>
+        <li role="menuitem">
+          <a href="/#services" class="nav-link">Services</a>
+        </li>
+        <li role="menuitem">
+          <a href="/#contact" class="nav-link cta">Contact Us</a>
+        </li>
       </ul>
       <button
         class="mobile-toggle"
@@ -48,12 +55,24 @@ const currentPath = Astro.url.pathname;
     padding: 1.25rem 0;
   }
 
-  .logo-text {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--dark-earth);
-    letter-spacing: -0.02em;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    img {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 1.5em;
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark-earth);
+      letter-spacing: -0.02em;
+    }
   }
 
   .nav-links {
@@ -95,14 +114,13 @@ const currentPath = Astro.url.pathname;
   .nav-link.cta {
     background: var(--sage-green);
     color: white;
-    padding: 0.625rem 1.5rem;
+    padding: 0.625rem 1rem;
     border-radius: 6px;
     transition: background 0.3s;
   }
 
   .nav-link.cta:hover {
     background: var(--dark-earth);
-    color: white;
   }
 
   .mobile-toggle {
@@ -135,6 +153,15 @@ const currentPath = Astro.url.pathname;
   }
 
   @media (min-width: 768px) {
+    .logo {
+      img {
+        max-width: 2.5em;
+      }
+      .logo-text {
+        font-size: 1.75em;
+      }
+    }
+
     .nav-links {
       display: flex;
     }

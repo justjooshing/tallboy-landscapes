@@ -1,6 +1,5 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import Header from "../../components/Header.astro";
 import ContactFooter from "../../components/ContactFooter.astro";
 import { getJobBySlug, getJobs } from "../../lib/jobs/index";
 import BeforeAfterImage from "../../components/BeforeAfterImage.astro";
@@ -77,8 +76,6 @@ const nextSlug = navigate(nextIndex);
   title={`${title} - Tallboy Landscapes`}
   description={`${title} project in ${location}`}
 >
-  <Header />
-
   <main>
     <!-- Hero Section -->
     <section class="job-hero">

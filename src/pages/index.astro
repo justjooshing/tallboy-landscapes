@@ -1,6 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
 import ContactFooter from "../components/ContactFooter.astro";
 import { getHomePageContent } from "../lib/homepage/index";
 import { getServices } from "../lib/services/index";
@@ -28,8 +27,6 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
 ---
 
 <Layout title="Tallboy Landscapes - Professional Landscaping Services">
-  <Header />
-
   <main>
     <!-- Hero Section -->
     <section class="hero">

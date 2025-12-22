@@ -1,5 +1,6 @@
 ---
 import { schema, facebookPage, instagramPage } from "../constants/schema.js";
+import Header from "../components/Header.astro";
 
 const {
   title,
@@ -65,6 +66,7 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
+    <Header />
     <slot />
   </body>
 </html>
