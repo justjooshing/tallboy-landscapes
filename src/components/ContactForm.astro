@@ -142,7 +142,6 @@
 <script>
   import emailjs from "@emailjs/browser";
 
-  console.log("script loaded");
   import {
     // @ts-expect-error doesn't expect these to exist
     PUBLIC_EMAILJS_SERVICE_ID,
@@ -169,7 +168,6 @@
       }, 2000);
     }
     form.addEventListener("submit", async (e) => {
-      console.log("submitted");
       e.preventDefault();
 
       // Honeypot check: abort if hidden checkbox is checked (likely a bot)

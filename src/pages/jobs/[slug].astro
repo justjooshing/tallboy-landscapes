@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import ContactFooter from "../../components/ContactFooter.astro";
 import { getJobBySlug, getJobs } from "../../lib/jobs/index";
-import BeforeAfterImage from "../../components/BeforeAfterImage.astro";
+import OptimisedImage from '../../components/OptimisedImage.astro';
 
 const { slug } = Astro.params;
 
@@ -80,11 +80,12 @@ const nextSlug = navigate(nextIndex);
     <!-- Hero Section -->
     <section class="job-hero">
       <div class="job-hero-image-wrapper">
-        <img
+        <OptimisedImage
           src={showcaseImage?.fields.file?.url ||
             "/placeholder.svg?height=600&width=1600&query=landscaping project"}
           alt={title}
-          class="job-hero-image"
+          className="job-hero-image"
+          priority
         />
         <div class="job-hero-overlay"></div>
       </div>
@@ -109,7 +110,7 @@ const nextSlug = navigate(nextIndex);
               ) : null}
               {image ? (
                 <div class="image-content">
-                  <img
+                  <OptimisedImage
                     src={image?.url || "/placeholder.svg"}
                     alt={image?.alt}
                   />

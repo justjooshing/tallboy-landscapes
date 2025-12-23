@@ -7,6 +7,7 @@ import { getTestimonials } from "../lib/testimonials/index";
 import { getHeroJobs } from "../lib/jobs/index";
 import { getStats } from "../lib/stats/index";
 import BeforeAfterImage from "../components/BeforeAfterImage.astro";
+import OptimisedImage from "../components/OptimisedImage.astro";
 
 const homeContent = await getHomePageContent();
 const services = await getServices();
@@ -32,10 +33,11 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-image-wrapper">
-        <img
+        <OptimisedImage
           src={heroImage || "/placeholder.svg"}
           alt="Beautiful landscaping"
-          class="hero-image"
+          className="hero-image"
+          priority
         />
         <div class="hero-overlay"></div>
       </div>
@@ -116,13 +118,13 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
                   ) : (
                     <a href={`/jobs/${job.fields.slug}`}>
                       <div class="project-image-wrapper">
-                        <img
+                        <OptimisedImage
                           src={
                             job.fields.showcaseImage?.fields.file?.url ||
                             "/placeholder.svg"
                           }
                           alt={job.fields.title}
-                          class="project-image"
+                          className="project-image"
                         />
                       </div>
                       <div class="project-info">
