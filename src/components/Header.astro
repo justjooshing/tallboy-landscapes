@@ -176,7 +176,7 @@ const currentPath = Astro.url.pathname;
   const toggle = document.querySelector(".mobile-toggle");
   const navLinks = document.querySelector(".nav-links");
   if (toggle && navLinks) {
-    const updateAria = (expanded) => {
+    const updateAria = (expanded: boolean) => {
       toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
     };
 
@@ -204,6 +204,8 @@ const currentPath = Astro.url.pathname;
     tag.addEventListener("click", (e) => {
       if (window.location.pathname === "/") {
         e.preventDefault();
+        window.location.hash = "";
+        window.history.replaceState({}, "", window.location.href.slice(0, -1));
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     });
