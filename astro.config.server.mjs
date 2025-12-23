@@ -1,37 +1,6 @@
-import { defineConfig, envField } from "astro/config";
-import cloudflare from "@astrojs/cloudflare";
+import { setupConfig } from "./astro.config.common";
 
-export default defineConfig({
-  site: "https://preview.tallboylandscapes.com",
+export default setupConfig({
   output: "server",
-  adapter: cloudflare({ imageService: "compile" }),
-  env: {
-    validateSecrets: true,
-    schema: {
-      PUBLIC_EMAILJS_SERVICE_ID: envField.string({
-        context: "client",
-        access: "public",
-      }),
-      PUBLIC_EMAILJS_TEMPLATE_ID: envField.string({
-        context: "client",
-        access: "public",
-      }),
-      PUBLIC_EMAILJS_PUBLIC_KEY: envField.string({
-        context: "client",
-        access: "public",
-      }),
-      CONTENTFUL_SPACE_ID: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      CONTENTFUL_ACCESS_TOKEN: envField.string({
-        context: "server",
-        access: "secret",
-      }),
-      CONTENTFUL_HOST: envField.string({
-        context: "server",
-        access: "public",
-      }),
-    },
-  },
+  site: "https://preview.tallboylandscapes.com",
 });
