@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { JobResolved } from "./types";
+import type { JobResolved } from "./types";
 
 export async function getHeroJobs(): Promise<JobResolved[]> {
   try {

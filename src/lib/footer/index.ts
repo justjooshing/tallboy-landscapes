@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { FooterResolved } from "./types";
+import type { FooterResolved } from "./types";
 
 export async function getFooterContent(): Promise<FooterResolved | null> {
   try {

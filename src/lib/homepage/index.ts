@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { HomePageResolved } from "./types";
+import type { HomePageResolved } from "./types";
 
 export async function getHomePageContent(): Promise<HomePageResolved | null> {
   try {

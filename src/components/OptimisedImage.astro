@@ -9,11 +9,17 @@ interface Props {
 }
 
 const { src, alt, className, priority = false } = Astro.props;
+
+const secureSrc = src.startsWith("//")
+  ? `https:${src}`
+  : src.startsWith("http://")
+    ? src.replace(/^http:\/\//i, "https://")
+    : src;
 ---
 
 <div class="image-wrapper">
   <Image
-    src={src}
+    src={secureSrc}
     class={className}
     alt={alt}
     priority={priority}

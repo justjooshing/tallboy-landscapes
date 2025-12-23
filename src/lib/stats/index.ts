@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { StatResolved } from "./types";
+import type { StatResolved } from "./types";
 
 export async function getStats(): Promise<StatResolved[] | null> {
   try {

@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { TestimonialResolved } from "./types";
+import type { TestimonialResolved } from "./types";
 
 export async function getTestimonials(): Promise<TestimonialResolved[]> {
   try {

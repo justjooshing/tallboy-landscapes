@@ -1,5 +1,5 @@
 import client from "../contentful";
-import { ServiceResolved } from "./types";
+import type { ServiceResolved } from "./types";
 
 export async function getServices(): Promise<ServiceResolved[] | null> {
   try {
