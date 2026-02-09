@@ -1,5 +1,7 @@
-export async function GET({ site }: { site: string}) {
-    const isPreview = site === "https://preview.tallboylandscapes.com/";
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = ({ site }) => {
+    const isPreview = site?.host.startsWith('preview.')
     const sitemap = site ? new URL('/sitemap.xml', site).toString() : '/sitemap.xml';
 
     const previewLines = [

@@ -68,7 +68,13 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
     <link rel="me" href={facebookPage} />
     <link rel="me" href={instagramPage} />
     <meta name="generator" content={Astro.generator} />
-    {isPreview && <meta name="robots" content="noindex,nofollow" />}
+    {
+      isPreview ? (
+        <meta name="robots" content="noindex,nofollow" />
+      ) : (
+        <link rel="sitemap" href="/sitemap-index.xml" />
+      )
+    }
     <title>{title}</title>
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>

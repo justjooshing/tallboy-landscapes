@@ -1,6 +1,7 @@
 import { defineConfig, envField } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 import { imageService } from "@unpic/astro/service";
+import sitemap from "@astrojs/sitemap";
 
 interface ConfigProps {
   output: "static" | "server";
@@ -11,6 +12,7 @@ export const setupConfig = ({ output, site }: ConfigProps) =>
   defineConfig({
     site,
     output,
+    integrations: [sitemap()],
     adapter: output === 'static' ? undefined : cloudflare({ imageService: "compile" }),
     image: {
       service: imageService({
