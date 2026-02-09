@@ -11,7 +11,7 @@ export const setupConfig = ({ output, site }: ConfigProps) =>
   defineConfig({
     site,
     output,
-    adapter: cloudflare({ imageService: "compile" }),
+    adapter: output === 'static' ? undefined : cloudflare({ imageService: "compile" }),
     image: {
       service: imageService({
         fallbackService: "contentful",
