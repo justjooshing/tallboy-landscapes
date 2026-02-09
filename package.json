@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/sitemap": "^3.7.0",
     "@emailjs/browser": "^4.4.1",
     "@unpic/astro": "^1.0.2",
     "astro": "5.16.6",
