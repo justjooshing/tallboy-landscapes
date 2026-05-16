@@ -1,28 +1,32 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ContactFooter from "../../components/ContactFooter.astro";
-import { getJobBySlug, getJobs } from "../../lib/jobs/index";
+import { getJobs } from "../../lib/jobs/index";
 import OptimisedImage from '../../components/OptimisedImage.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
 
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  const jobs = await getJobs();
+  return jobs.map((job) => ({
+    params: { slug: job.fields.slug },
+    props: { job, jobs },
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { job, jobs } = Astro.props;
 const { slug } = Astro.params;
 
-const jobPromise = getJobBySlug(slug);
-const jobsPromise = getJobs();
-
-const [job, jobs] = await Promise.all([jobPromise, jobsPromise]);
-
-if (!job) {
-  return Astro.redirect("/404");
-}
-
-const { title, location, showcaseImage, descriptions, images, beforeafterImages = [] } = job.fields;
+const { title, location, showcaseImage, descriptions, images } = job.fields;
 
 interface Content {
   description?: { content: string };
   image?: { url: string; alt: string };
 }
 
-// Create alternating content sections
 const contentSections: Content[] = [];
 
 if (descriptions && images) {
@@ -38,7 +42,6 @@ if (descriptions && images) {
 
   const maxLength = Math.max(descriptionSections.length, images.length);
   for (let i = 0; i < maxLength; i++) {
-    // add both of these into the single array
     const description = descriptionSections[i];
     const image = images[i];
     contentSections.push({
@@ -53,13 +56,6 @@ if (descriptions && images) {
       }),
     });
   }
-}
-
-export async function getStaticPaths() {
-  const jobs = await getJobs();
-  return jobs.map((job) => ({
-    params: { slug: job.fields.slug },
-  }));
 }
 
 // Previous / Next navigation (loops)

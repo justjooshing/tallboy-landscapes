@@ -1,11 +1,17 @@
-export interface FooterResolved {
+import type { EntryFieldTypes, EntrySkeletonType } from "contentful";
+import type { Resolved } from "../types";
+
+export interface FooterSkeleton extends EntrySkeletonType {
+  contentTypeId: "contactInfo";
   fields: {
-    contactFormTitle?: string;
-    contactFormSubtitle?: string;
-    contactEmail?: string;
-    contactPhone?: string;
-    hours?: string[];
-    serviceAreas?: string[];
-    companyName?: string;
+    contactFormTitle: EntryFieldTypes.Symbol;
+    contactFormSubtitle: EntryFieldTypes.Symbol;
+    contactEmail: EntryFieldTypes.Symbol;
+    contactPhone: EntryFieldTypes.Symbol;
+    hours: EntryFieldTypes.Array<EntryFieldTypes.Symbol>;
+    serviceAreas: EntryFieldTypes.Array<EntryFieldTypes.Symbol>;
+    companyName: EntryFieldTypes.Symbol;
   };
 }
+
+export type FooterResolved = Resolved<FooterSkeleton>;

@@ -1,14 +1,18 @@
-import type { Asset } from "../types";
+import type { EntryFieldTypes, EntrySkeletonType } from "contentful";
+import type { Resolved } from "../types";
 
-export interface HomePageResolved {
+export interface HomePageSkeleton extends EntrySkeletonType {
+  contentTypeId: "homePageContent";
   fields: {
-    heroImage: Asset;
-    heroTitle: string;
-    heroSubtitle: string;
-    aboutTitle: string;
-    aboutDescription: string;
-    featuredJobsTitle: string;
-    servicesTitle: string;
-    testimonialTitle: string;
+    heroImage: EntryFieldTypes.AssetLink;
+    heroTitle: EntryFieldTypes.Symbol;
+    heroSubtitle: EntryFieldTypes.Symbol;
+    aboutTitle: EntryFieldTypes.Symbol;
+    aboutDescription: EntryFieldTypes.Text;
+    featuredJobsTitle: EntryFieldTypes.Symbol;
+    servicesTitle: EntryFieldTypes.Symbol;
+    testimonialTitle: EntryFieldTypes.Symbol;
   };
 }
+
+export type HomePageResolved = Resolved<HomePageSkeleton>;

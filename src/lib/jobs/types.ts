@@ -1,14 +1,18 @@
-import type { Asset } from "../types";
+import type { EntryFieldTypes, EntrySkeletonType } from "contentful";
+import type { Resolved } from "../types";
 
-export interface JobResolved {
-  sys: { id: string };
+export interface JobSkeleton extends EntrySkeletonType {
+  contentTypeId: "Job";
   fields: {
-    title: string;
-    slug: string;
-    location: string;
-    showcaseImage?: Asset;
-    descriptions: string;
-    images: Asset[];
-    beforeafterImages?: Asset[];
+    title: EntryFieldTypes.Symbol;
+    slug: EntryFieldTypes.Symbol;
+    location: EntryFieldTypes.Symbol;
+    isHomepageJob: EntryFieldTypes.Boolean;
+    showcaseImage: EntryFieldTypes.AssetLink;
+    descriptions: EntryFieldTypes.Text;
+    images: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
+    beforeafterImages: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
   };
 }
+
+export type JobResolved = Resolved<JobSkeleton>;

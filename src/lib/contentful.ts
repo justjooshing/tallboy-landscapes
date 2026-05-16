@@ -12,6 +12,6 @@ const client = createClient({
   space: CONTENTFUL_SPACE_ID,
   host: CONTENTFUL_HOST,
   accessToken: CONTENTFUL_ACCESS_TOKEN,
-});
+}).withoutUnresolvableLinks;
 
 export default client;

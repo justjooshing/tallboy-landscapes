@@ -1,13 +1,12 @@
 import client from "../contentful";
-import type { ServiceResolved } from "./types";
+import type { ServiceResolved, ServiceSkeleton } from "./types";
 
 export async function getServices(): Promise<ServiceResolved[] | null> {
   try {
-    const entries = await client.getEntries({
+    const entries = await client.getEntries<ServiceSkeleton>({
       content_type: "service",
     });
-
-    return entries.items as unknown as ServiceResolved[];
+    return entries.items;
   } catch (error) {
     console.error("Error fetching services:", error);
     return null;
