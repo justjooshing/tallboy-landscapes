@@ -1,6 +1,7 @@
 ---
 import { getFooterContent } from "../lib//footer/index.js";
 import ContactForm from "./ContactForm.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const footerContent = await getFooterContent();
 
@@ -63,6 +64,7 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
         </div>
 
         <div class="footer-bottom">
+          <ThemeToggle />
           <p>
             {footerText}
           </p>
@@ -117,10 +119,18 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
   .footer-bottom {
     padding-top: 2rem;
     border-top: 1px solid var(--color-footer-border);
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     opacity: 0.7;
     font-size: 0.875rem;
   }
+
+  .footer-bottom p {
+    flex: 1;
+    text-align: center;
+  }
+
 
   @media (min-width: 768px) {
     .footer-info {
@@ -139,3 +149,4 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
     }
   }
 </style>
+

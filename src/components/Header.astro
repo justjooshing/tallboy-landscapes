@@ -28,14 +28,6 @@ const currentPath = Astro.url.pathname;
           <a href="/#contact" class="nav-link cta">Contact Us</a>
         </li>
       </ul>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-        </svg>
-        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-        </svg>
-      </button>
       <button
         class="mobile-toggle"
         aria-label="Toggle menu"
@@ -134,37 +126,6 @@ const currentPath = Astro.url.pathname;
     background: var(--color-primary-hover);
   }
 
-  .theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    color: var(--color-text);
-    transition: color 0.3s;
-  }
-
-  .theme-toggle:hover {
-    color: var(--color-primary);
-  }
-
-  .sun-icon {
-    display: none;
-  }
-
-  .moon-icon {
-    display: block;
-  }
-
-  :global([data-theme="dark"]) .sun-icon {
-    display: block;
-  }
-
-  :global([data-theme="dark"]) .moon-icon {
-    display: none;
-  }
-
   .mobile-toggle {
     display: flex;
     flex-direction: column;
@@ -221,6 +182,5 @@ const currentPath = Astro.url.pathname;
   }
 </style>
 
-<script src="../scripts/theme.ts"></script>
 <script src="../scripts/nav.ts"></script>
 <script src="../scripts/home-scroll.ts"></script>
