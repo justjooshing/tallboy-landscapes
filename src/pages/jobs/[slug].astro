@@ -4,6 +4,7 @@ import ContactFooter from "../../components/ContactFooter.astro";
 import { getJobs } from "../../lib/jobs/index";
 import OptimisedImage from '../../components/OptimisedImage.astro';
 import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import ServiceCard from "../../components/ServiceCard.astro";
 
 export const prerender = true;
 
@@ -129,27 +130,18 @@ const nextSlug = navigate(nextIndex);
     </section>
    : null }
 
-   <!-- Services Featured Section -->
    {relatedServices && relatedServices.length > 0 && (
      <section class="services-featured">
        <div class="container">
          <h2 class="section-title">Services featured in this project</h2>
          <div class="services-grid">
            {relatedServices.map((service) => (
-             service && service.sys && service.fields && (
-               <a href={`/services/${service.normalisedTitle}`} class="service-card">
-                 <div class="service-icon">{service.fields.icon || "🌿"}</div>
-                 <h3>{service.fields.title}</h3>
-                 <p>{service.fields.description}</p>
-               </a>
-             )
+             <ServiceCard service={service} />
            ))}
          </div>
        </div>
      </section>
    )}
-
-   <!-- Contact Section -->
     <ContactFooter />
   </main>
 </Layout>
@@ -246,7 +238,7 @@ const nextSlug = navigate(nextIndex);
   }
 
   .image-content {
-    height: 100%
+    height: 100%;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 10px 40px var(--color-shadow);
@@ -349,39 +341,5 @@ const nextSlug = navigate(nextIndex);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-  }
-
-  .services-featured .service-card {
-    background: var(--color-surface);
-    padding: 1.5rem;
-    border-radius: 8px;
-    text-align: center;
-    transition:
-      transform 0.3s,
-      box-shadow 0.3s;
-    border: 1px solid var(--color-border-muted);
-  }
-
-  .services-featured .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px var(--color-shadow);
-    border-color: var(--color-primary);
-  }
-
-  .services-featured .service-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .services-featured .service-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-    color: var(--color-heading);
-  }
-
-  .services-featured .service-card p {
-    color: var(--color-text);
-    font-size: 0.95rem;
-    line-height: 1.5;
   }
 </style>

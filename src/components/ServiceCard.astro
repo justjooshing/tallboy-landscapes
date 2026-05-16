@@ -1,0 +1,52 @@
+---
+import type { ServiceResolved } from "../lib/services/types";
+
+interface Props {
+  service: ServiceResolved;
+}
+
+const { service } = Astro.props;
+---
+
+<a href={`/services/${service.normalisedTitle}`} class="service-card">
+  <div class="service-icon">{service.fields.icon || "🌿"}</div>
+  <h3>{service.fields.title}</h3>
+  <p>{service.fields.description}</p>
+</a>
+
+<style>
+  .service-card {
+    display: block;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
+    border: 1px solid var(--color-border-muted);
+  }
+
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--color-shadow);
+    border-color: var(--color-primary);
+  }
+
+  .service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .service-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-heading);
+  }
+
+  .service-card p {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+</style>

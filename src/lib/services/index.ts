@@ -12,7 +12,7 @@ export async function getServices(): Promise<ServiceResolved[] | null> {
     const entries = await client.getEntries<ServiceSkeleton>({
       content_type: "service",
     });
-    return entries.items.map(withNormalisedTitle) ?? null;
+    return entries.items.map(withNormalisedTitle);
   } catch (error) {
     console.error("Error fetching services:", error);
     return null;

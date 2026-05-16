@@ -1,0 +1,83 @@
+---
+import type { JobResolved } from "../lib/jobs/types";
+import BeforeAfterImage from "./BeforeAfterImage.astro";
+import OptimisedImage from "./OptimisedImage.astro";
+
+interface Props {
+  job: JobResolved;
+}
+
+const { job } = Astro.props;
+---
+
+<div class="project-card">
+  {job.fields.beforeafterImages?.length ? (
+    <>
+      <BeforeAfterImage images={job.fields.beforeafterImages} />
+      <a href={`/jobs/${job.fields.slug}`}>
+        <div class="project-info">
+          <h3>{job.fields.title}</h3>
+          <p class="project-location">{job.fields.location}</p>
+        </div>
+      </a>
+    </>
+  ) : (
+    <a href={`/jobs/${job.fields.slug}`}>
+      <div class="project-image-wrapper">
+        <OptimisedImage
+          src={job.fields.showcaseImage?.fields.file?.url || "/placeholder.svg"}
+          alt={job.fields.title}
+          className="project-image"
+        />
+      </div>
+      <div class="project-info">
+        <h3>{job.fields.title}</h3>
+        <p class="project-location">{job.fields.location}</p>
+      </div>
+    </a>
+  )}
+</div>
+
+<style>
+  .project-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    background: var(--color-surface-tinted);
+  }
+
+  .project-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .project-image-wrapper {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+  }
+
+  .project-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .project-card:hover .project-image {
+    transform: scale(1.05);
+  }
+
+  .project-info {
+    padding: 1.5rem;
+  }
+
+  .project-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-heading);
+  }
+
+  .project-location {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+</style>
