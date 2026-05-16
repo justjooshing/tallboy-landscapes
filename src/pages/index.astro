@@ -86,11 +86,13 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
             <h2 class="section-title">{servicesTitle}</h2>
             <div class="services-grid">
               {services.map((service) => (
-                <div class="service-card">
-                  <div class="service-icon">{service.fields.icon || "🌿"}</div>
-                  <h3>{service.fields.title}</h3>
-                  <p>{service.fields.description}</p>
-                </div>
+                <a href={`/services/${service.normalisedTitle}`} class="service-card-link">
+                  <div class="service-card">
+                    <div class="service-icon">{service.fields.icon || "🌿"}</div>
+                    <h3>{service.fields.title}</h3>
+                    <p>{service.fields.description}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
@@ -322,6 +324,7 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   }
 
   .service-card {
+    height: 100%;
     background: var(--color-surface);
     padding: 2rem;
     border-radius: 8px;

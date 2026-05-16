@@ -1,0 +1,223 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ContactFooter from "../../components/ContactFooter.astro";
+import { getJobsByServiceId } from "../../lib/jobs/index";
+import OptimisedImage from '../../components/OptimisedImage.astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import BeforeAfterImage from "@/src/components/BeforeAfterImage.astro";
+import { getServices } from "@/src/lib/services";
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  // We'll fetch all services at build time to generate paths
+  const services = await getServices();
+  if (!services) return [];
+
+  return services.map((service) => ({
+    params: { serviceTitle: service.normalisedTitle },
+    props: { service }
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { service } = Astro.props;
+// Fetch jobs for this service
+const jobs = service ? await getJobsByServiceId(service.sys.id) : [];
+
+---
+{service ? (
+  <>
+    <Layout title={`${service.fields.title} - Tallboy Landscapes`}>
+      <main>
+        <!-- Service Header -->
+        <section class="service-header">
+          <div class="container">
+            <h1 class="service-title">{service.fields.title}</h1>
+            <p class="service-description">{service.fields.description}</p>
+          </div>
+        </section>
+
+        <!-- Jobs Grid -->
+        {jobs.length > 0 ? (
+          <section class="service-jobs">
+            <div class="container">
+              <h2 class="section-title">Projects featuring this service</h2>
+              <div class="projects-grid">
+                {jobs.map((job) => (
+                  <div class="project-card">
+                    {job.fields.beforeafterImages?.length ? (
+                      <>
+                        <BeforeAfterImage images={job.fields.beforeafterImages} />
+                        <a href={`/jobs/${job.fields.slug}`}>
+                          <div class="project-info">
+                            <h3>{job.fields.title}</h3>
+                            <p class="project-location">{job.fields.location}</p>
+                          </div>
+                        </a>
+                      </>
+                    ) : (
+                      <a href={`/jobs/${job.fields.slug}`}>
+                        <div class="project-image-wrapper">
+                          <OptimisedImage
+                            src={
+                              job.fields.showcaseImage?.fields.file?.url ||
+                              "/placeholder.svg?height=400&width=600&query=landscaping"
+                            }
+                            alt={job.fields.title}
+                            className="project-image"
+                          />
+                        </div>
+                        <div class="project-info">
+                          <h3>{job.fields.title}</h3>
+                          <p class="project-location">{job.fields.location}</p>
+                        </div>
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section class="no-jobs">
+            <div class="container">
+              <p>No projects found for this service yet. Check back soon!</p>
+            </div>
+          </section>
+        )}
+
+        <!-- Contact Section -->
+        <ContactFooter />
+      </main>
+    </Layout>
+    <style>
+      .service-header {
+        padding: 4rem 0;
+        background: var(--color-surface-tinted);
+        text-align: center;
+      }
+
+      .service-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--color-heading);
+      }
+
+      .service-description {
+        font-size: 1.25rem;
+        line-height: 1.7;
+        color: var(--color-text);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .service-jobs {
+        padding: 5rem 0;
+        background: var(--color-surface);
+      }
+
+      .section-title {
+        font-size: 2.25rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        color: var(--color-heading);
+      }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .project-card {
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        background: var(--color-surface-tinted);
+      }
+
+      .project-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .project-image-wrapper {
+        aspect-ratio: 4/3;
+        overflow: hidden;
+      }
+
+      .project-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+      }
+
+      .project-card:hover .project-image {
+        transform: scale(1.05);
+      }
+
+      .project-info {
+        padding: 1.5rem;
+      }
+
+      .project-info h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--color-heading);
+      }
+
+      .project-location {
+        color: var(--color-primary);
+        font-weight: 500;
+      }
+
+      .no-jobs {
+        text-align: center;
+        padding: 4rem 0;
+        background: var(--color-surface-tinted);
+      }
+
+      .no-jobs p {
+        font-size: 1.25rem;
+        color: var(--color-text);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      @media (min-width: 768px) {
+        .service-title {
+          font-size: 3.5rem;
+        }
+
+        .service-description {
+          font-size: 1.5rem;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .service-title {
+          font-size: 4.5rem;
+        }
+
+        .projects-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+    </style>
+  </>
+) : (
+  <Layout title="Service not found - Tallboy Landscapes">
+    <main>
+      <section class="service-not-found">
+        <div class="container">
+          <h1>Service not found</h1>
+          <p>The service you're looking for doesn't exist or has been removed.</p>
+          <a href="/" class="btn">Return to homepage</a>
+        </div>
+      </section>
+    </main>
+  </Layout>
+)}

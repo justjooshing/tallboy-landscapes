@@ -10,4 +10,4 @@ export interface ServiceSkeleton extends EntrySkeletonType {
   };
 }
 
-export type ServiceResolved = Resolved<ServiceSkeleton>;
+export type ServiceResolved = Resolved<ServiceSkeleton> & { normalisedTitle: string }

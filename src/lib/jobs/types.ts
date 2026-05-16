@@ -1,5 +1,6 @@
 import type { EntryFieldTypes, EntrySkeletonType } from "contentful";
 import type { Resolved } from "../types";
+import type { ServiceSkeleton, ServiceResolved } from "../services/types";
 
 export interface JobSkeleton extends EntrySkeletonType {
   contentTypeId: "Job";
@@ -12,7 +13,13 @@ export interface JobSkeleton extends EntrySkeletonType {
     descriptions: EntryFieldTypes.Text;
     images: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
     beforeafterImages: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
+    // Reference to service(s) this job showcases
+    relatedServices: EntryFieldTypes.Array<EntryFieldTypes.EntryLink<ServiceSkeleton>>;
   };
 }
 
-export type JobResolved = Resolved<JobSkeleton>;
+export type JobResolved = Omit<Resolved<JobSkeleton>, 'fields'> & {
+  fields: Omit<Resolved<JobSkeleton>['fields'], 'relatedServices'> & {
+    relatedServices: ServiceResolved[];
+  }
+};
