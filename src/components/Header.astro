@@ -22,6 +22,9 @@ const currentPath = Astro.url.pathname;
           <a href="/#services" class="nav-link">Services</a>
         </li>
         <li role="menuitem">
+          <a href="/#featured-projects" class="nav-link">Projects</a>
+        </li>
+        <li role="menuitem">
           <a href="/#contact" class="nav-link cta">Contact Us</a>
         </li>
       </ul>
@@ -153,6 +156,17 @@ const currentPath = Astro.url.pathname;
   }
 
   @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .mobile-toggle {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
     .logo {
       img {
         max-width: 2.5em;
@@ -163,11 +177,7 @@ const currentPath = Astro.url.pathname;
     }
 
     .nav-links {
-      display: flex;
-    }
-
-    .mobile-toggle {
-      display: none;
+      gap: 2.5rem;
     }
   }
 </style>
