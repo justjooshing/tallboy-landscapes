@@ -23,7 +23,14 @@ const [before, after] = [images[0], images.at(-1)];
     aria-label="Compare before and after"
   />
 
-  <div class="ba-handle">⇆</div>
+  <div class="ba-handle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="9 6 15 12 9 18"></polyline>
+    </svg>
+  </div>
 </div>
 
 <style>
@@ -72,13 +79,23 @@ const [before, after] = [images[0], images.at(-1)];
     top: 50%;
     left: 10%;
     transform: translate(-50%, -50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     background: var(--color-ba-thumb);
-    border-radius: 999px;
-    padding: 8px 10px;
-    font-size: 12px;
-    font-weight: 600;
+    color: var(--color-ba-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
     pointer-events: none;
-    box-shadow: 0 4px 12px var(--color-shadow);
+    box-shadow: 0 2px 12px var(--color-shadow-lg), 0 0 0 2px var(--color-ba-ring);
+  }
+
+  .ba-handle svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
   }
 </style>
 
@@ -111,7 +128,7 @@ const [before, after] = [images[0], images.at(-1)];
     };
 
     slider.addEventListener("pointerdown", setGrabbing);
-    document.addEventListener("pointerup", unsetGrabbing);
+    slider.addEventListener("pointerup", unsetGrabbing);
     slider.addEventListener("pointercancel", unsetGrabbing);
     slider.addEventListener("mouseleave", unsetGrabbing);
   });

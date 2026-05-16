@@ -75,9 +75,10 @@
   --color-footer-input-focus:  hsl(var(--hsl-white) / 0.08);
   --color-footer-placeholder:  hsl(var(--hsl-white) / 0.5);
 
-  /* Before/after slider — always on top of photos */
   --color-ba-thumb:          hsl(var(--hsl-white));
   --color-ba-overlay:        hsl(var(--hsl-white) / 0.2);
+  --color-ba-icon:           hsl(var(--hsl-earth));
+  --color-ba-ring:           hsl(var(--hsl-white) / 0.4);
 
   --font-display: "PlayfairDisplayLocal", serif;
   --font-body: "InterLocal", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -109,6 +110,11 @@
 
   --color-footer-bg:         hsl(var(--hsl-dark-footer));
   --color-footer-text:       hsl(var(--hsl-dark-heading));
+
+  --color-ba-thumb:          hsl(var(--hsl-dark-heading));
+  --color-ba-overlay:        hsl(var(--hsl-black) / 0.25);
+  --color-ba-icon:           hsl(var(--hsl-dark-bg));
+  --color-ba-ring:           hsl(var(--hsl-dark-heading) / 0.4);
 }
 
 html {
