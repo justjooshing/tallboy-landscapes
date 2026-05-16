@@ -17,15 +17,98 @@
 }
 
 :root {
-  --sage-green: #5a6a48;
-  --dark-earth: #2d3a2e;
-  --cream: #f5f3f0;
-  --terracotta: #d4a574;
-  --charcoal: #3a3a3a;
+  /* ── Light colours ───────────────────────────────── */
+  --hsl-sage:              88 19% 35%;
+  --hsl-earth:             125 13% 20%;
+  --hsl-cream:             36 20% 95%;
+  --hsl-terra:             31 53% 64%;
+  --hsl-charcoal:          0 0% 23%;
+  --hsl-white:             0 0% 100%;
+  --hsl-on-primary:        36 40% 97%;
+
+  /* ── Dark colours ────────────────────────────────── */
+  --hsl-dark-bg:           125 13% 10%;
+  --hsl-dark-surface:      125 11% 14%;
+  --hsl-dark-surface-tinted: 125 12% 12%;
+  --hsl-dark-text:         36 12% 78%;
+  --hsl-dark-heading:      36 18% 88%;
+  --hsl-dark-sage:         88 28% 55%;
+  --hsl-dark-border:       88 15% 50%;
+  --hsl-dark-footer:       125 17% 7%;
+  --hsl-dark-overlay-end:  125 13% 5%;
+  --hsl-dark-on-primary:   36 30% 92%;
+
+  /* ── Universal ───────────────────────────────────── */
+  --hsl-black:             0 0% 0%;
+  --hsl-mid:               0 0% 50%;
+
+  /* ── Semantic tokens (light) ─────────────────────── */
+  --color-bg:                hsl(var(--hsl-cream));
+  --color-bg-translucent:    hsl(var(--hsl-cream) / 0.95);
+  --color-bg-opaque:         hsl(var(--hsl-cream) / 0.98);
+  --color-surface:           hsl(var(--hsl-white));
+  --color-surface-tinted:    hsl(var(--hsl-cream));
+
+  --color-text:              hsl(var(--hsl-charcoal));
+  --color-heading:           hsl(var(--hsl-earth));
+
+  --color-primary:           hsl(var(--hsl-sage));
+  --color-primary-hover:     hsl(var(--hsl-earth));
+  --color-accent:            hsl(var(--hsl-terra));
+  --color-on-primary:        hsl(var(--hsl-on-primary));
+
+  --color-border:            hsl(var(--hsl-sage) / 0.1);
+  --color-border-muted:      hsl(var(--hsl-mid) / 0.25);
+  --color-shadow-sm:         hsl(var(--hsl-black) / 0.06);
+  --color-shadow:            hsl(var(--hsl-black) / 0.1);
+  --color-shadow-lg:         hsl(var(--hsl-black) / 0.4);
+
+  --color-overlay-start:     hsl(var(--hsl-black) / 0.3);
+  --color-overlay-end:       hsl(var(--hsl-earth) / 0.65);
+
+  /* Footer — always dark regardless of theme */
+  --color-footer-bg:           hsl(var(--hsl-earth));
+  --color-footer-text:         hsl(var(--hsl-cream));
+  --color-footer-border:       hsl(var(--hsl-white) / 0.1);
+  --color-footer-input-bg:     hsl(var(--hsl-white) / 0.05);
+  --color-footer-input-border: hsl(var(--hsl-white) / 0.2);
+  --color-footer-input-focus:  hsl(var(--hsl-white) / 0.08);
+  --color-footer-placeholder:  hsl(var(--hsl-white) / 0.5);
+
+  /* Before/after slider — always on top of photos */
+  --color-ba-thumb:          hsl(var(--hsl-white));
+  --color-ba-overlay:        hsl(var(--hsl-white) / 0.2);
 
   --font-display: "PlayfairDisplayLocal", serif;
   --font-body: "InterLocal", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+}
+
+[data-theme="dark"] {
+  /* ── Semantic tokens (dark) ──────────────────────── */
+  --color-bg:                hsl(var(--hsl-dark-bg));
+  --color-bg-translucent:    hsl(var(--hsl-dark-bg) / 0.95);
+  --color-bg-opaque:         hsl(var(--hsl-dark-bg) / 0.98);
+  --color-surface:           hsl(var(--hsl-dark-surface));
+  --color-surface-tinted:    hsl(var(--hsl-dark-surface-tinted));
+
+  --color-text:              hsl(var(--hsl-dark-text));
+  --color-heading:           hsl(var(--hsl-dark-heading));
+
+  --color-primary:           hsl(var(--hsl-dark-sage));
+  --color-primary-hover:     hsl(var(--hsl-dark-heading));
+  --color-on-primary:        hsl(var(--hsl-dark-on-primary));
+
+  --color-border:            hsl(var(--hsl-dark-border) / 0.15);
+  --color-shadow-sm:         hsl(var(--hsl-black) / 0.15);
+  --color-shadow:            hsl(var(--hsl-black) / 0.2);
+  --color-shadow-lg:         hsl(var(--hsl-black) / 0.5);
+
+  --color-overlay-start:     hsl(var(--hsl-black) / 0.4);
+  --color-overlay-end:       hsl(var(--hsl-dark-overlay-end) / 0.75);
+
+  --color-footer-bg:         hsl(var(--hsl-dark-footer));
+  --color-footer-text:       hsl(var(--hsl-dark-heading));
 }
 
 html {
@@ -34,8 +117,8 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: var(--charcoal);
-  background-color: var(--cream);
+  color: var(--color-text);
+  background-color: var(--color-bg);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -21,9 +21,17 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Must be inlined to run before rendering
+      const stored = localStorage.getItem("theme");
+      const preferred = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      document.documentElement.setAttribute("data-theme", stored ?? preferred);
+    </script>
     <link
       rel="icon"
-      id="favicon"
       type="image/png"
       href="/favicon.png"
       sizes="32x32"
@@ -31,7 +39,6 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
     />
     <link
       rel="icon"
-      id="favicon"
       type="image/png"
       href="/favicon-light.png"
       sizes="32x32"

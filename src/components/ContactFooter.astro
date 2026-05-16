@@ -74,8 +74,8 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
 
 <style>
   .contact-footer {
-    background: var(--dark-earth);
-    color: var(--cream);
+    background: var(--color-footer-bg);
+    color: var(--color-footer-text);
     padding: 4rem 0 2rem;
   }
 
@@ -88,7 +88,7 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
   .footer-main h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: white;
+    color: var(--color-footer-text);
   }
 
   .footer-main p {
@@ -105,7 +105,7 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
   .info-section h3 {
     font-size: 1.125rem;
     margin-bottom: 0.75rem;
-    color: var(--terracotta);
+    color: var(--color-accent);
   }
 
   .info-section p {
@@ -116,7 +116,7 @@ const footerText = `© ${year} ${companyName}. All rights reserved.`;
 
   .footer-bottom {
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-footer-border);
     text-align: center;
     opacity: 0.7;
     font-size: 0.875rem;

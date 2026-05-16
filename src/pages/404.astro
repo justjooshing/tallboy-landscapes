@@ -30,7 +30,7 @@ const jobs = await getJobs();
     justify-content: center;
     min-height: 70vh;
     padding: 6rem 0;
-    color: var(--charcoal);
+    color: var(--color-text);
   }
 
   .not-found-inner {
@@ -42,13 +42,13 @@ const jobs = await getJobs();
   .not-found-hero h1 {
     font-size: 6rem;
     margin: 0 0 0.5rem 0;
-    color: var(--dark-earth);
+    color: var(--color-heading);
   }
 
   .not-found-hero p {
     font-size: 1.25rem;
     margin: 0 0 1.5rem 0;
-    color: rgba(0, 0, 0, 0.7);
+    color: var(--color-text);
   }
 
   .not-found-actions {
@@ -66,14 +66,14 @@ const jobs = await getJobs();
   }
 
   .btn.primary {
-    background: var(--sage-green);
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
   }
 
   .btn.muted {
     background: transparent;
-    color: var(--charcoal);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-muted);
   }
 
   .btn:hover {

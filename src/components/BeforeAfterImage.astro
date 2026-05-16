@@ -63,8 +63,8 @@ const [before, after] = [images[0], images.at(-1)];
     appearance: none;
     width: 4px;
     height: 100%;
-    background: white;
-    box-shadow: 0 0 0 9999px rgba(255, 255, 255, 0.2);
+    background: var(--color-ba-thumb);
+    box-shadow: 0 0 0 9999px var(--color-ba-overlay);
   }
 
   .ba-handle {
@@ -72,13 +72,13 @@ const [before, after] = [images[0], images.at(-1)];
     top: 50%;
     left: 10%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: var(--color-ba-thumb);
     border-radius: 999px;
     padding: 8px 10px;
     font-size: 12px;
     font-weight: 600;
     pointer-events: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px var(--color-shadow);
   }
 </style>
 

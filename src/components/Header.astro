@@ -6,7 +6,7 @@ const currentPath = Astro.url.pathname;
   <div class="container">
     <nav class="nav">
       <a href="/" class="logo">
-        <img src="/favicon-light.png" />
+        <img id="logo-img" src="/favicon-light.png" />
         <span class="logo-text">Tallboy Landscapes</span>
       </a>
       <ul class="nav-links" role="menu">
@@ -28,6 +28,14 @@ const currentPath = Astro.url.pathname;
           <a href="/#contact" class="nav-link cta">Contact Us</a>
         </li>
       </ul>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+      </button>
       <button
         class="mobile-toggle"
         aria-label="Toggle menu"
@@ -45,10 +53,10 @@ const currentPath = Astro.url.pathname;
   .header {
     position: sticky;
     top: 0;
-    background: rgba(245, 243, 240, 0.95);
+    background: var(--color-bg-translucent);
     backdrop-filter: blur(10px);
     z-index: 100;
-    border-bottom: 1px solid rgba(107, 124, 89, 0.1);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .nav {
@@ -73,7 +81,7 @@ const currentPath = Astro.url.pathname;
       font-family: var(--font-display);
       font-size: 1.25rem;
       font-weight: 700;
-      color: var(--dark-earth);
+      color: var(--color-heading);
       letter-spacing: -0.02em;
     }
   }
@@ -96,34 +104,65 @@ const currentPath = Astro.url.pathname;
     left: 0;
     right: 0;
     top: 100%;
-    background: rgba(245, 243, 240, 0.98);
+    background: var(--color-bg-opaque);
     padding: 1rem 1.25rem 1.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 24px var(--color-shadow-sm);
   }
 
   .nav-link {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--charcoal);
+    color: var(--color-text);
     transition: color 0.3s;
     position: relative;
   }
 
   .nav-link:hover,
   .nav-link.active {
-    color: var(--sage-green);
+    color: var(--color-primary);
   }
 
   .nav-link.cta {
-    background: var(--sage-green);
-    color: white;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
     padding: 0.625rem 1rem;
     border-radius: 6px;
     transition: background 0.3s;
   }
 
   .nav-link.cta:hover {
-    background: var(--dark-earth);
+    background: var(--color-primary-hover);
+  }
+
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: var(--color-text);
+    transition: color 0.3s;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-primary);
+  }
+
+  .sun-icon {
+    display: none;
+  }
+
+  .moon-icon {
+    display: block;
+  }
+
+  :global([data-theme="dark"]) .sun-icon {
+    display: block;
+  }
+
+  :global([data-theme="dark"]) .moon-icon {
+    display: none;
   }
 
   .mobile-toggle {
@@ -138,7 +177,7 @@ const currentPath = Astro.url.pathname;
   .mobile-toggle span {
     width: 24px;
     height: 2px;
-    background: var(--dark-earth);
+    background: var(--color-heading);
     transition: all 0.3s;
   }
 
@@ -182,42 +221,6 @@ const currentPath = Astro.url.pathname;
   }
 </style>
 
-<script>
-  const toggle = document.querySelector(".mobile-toggle");
-  const navLinks = document.querySelector(".nav-links");
-  if (toggle && navLinks) {
-    const updateAria = (expanded: boolean) => {
-      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-    };
-
-    toggle.addEventListener("click", () => {
-      const isOpen = navLinks.classList.toggle("active");
-      toggle.classList.toggle("open", isOpen);
-      updateAria(isOpen);
-    });
-
-    // close menu on link click
-    navLinks.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => {
-        if (navLinks.classList.contains("active")) {
-          navLinks.classList.remove("active");
-          toggle.classList.remove("open");
-          updateAria(false);
-        }
-      });
-    });
-  }
-</script>
-<script>
-  const tags = document.querySelectorAll("a[href='/']");
-  tags.forEach((tag) => {
-    tag.addEventListener("click", (e) => {
-      if (window.location.pathname === "/") {
-        e.preventDefault();
-        window.location.hash = "";
-        window.history.replaceState({}, "", window.location.href.slice(0, -1));
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    });
-  });
-</script>
+<script src="../scripts/theme.ts"></script>
+<script src="../scripts/nav.ts"></script>
+<script src="../scripts/home-scroll.ts"></script>

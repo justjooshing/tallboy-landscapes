@@ -206,8 +206,8 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.3),
-      rgba(45, 58, 46, 0.6)
+      var(--color-overlay-start),
+      var(--color-overlay-end)
     );
   }
 
@@ -215,7 +215,7 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     position: relative;
     z-index: 1;
     width: 100%;
-    color: white;
+    color: var(--color-on-primary);
   }
 
   .hero-title {
@@ -234,8 +234,8 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
 
   .hero-cta {
     display: inline-block;
-    background: var(--sage-green);
-    color: white;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
     padding: 1rem 2.5rem;
     border-radius: 6px;
     font-weight: 600;
@@ -244,14 +244,14 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   }
 
   .hero-cta:hover {
-    background: var(--terracotta);
+    background: var(--color-accent);
     transform: translateY(-2px);
   }
 
   /* About Section */
   .about {
     padding: 5rem 0;
-    background: white;
+    background: var(--color-surface);
   }
 
   .about-content {
@@ -262,14 +262,14 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   .about-text h2 {
     font-size: 2.25rem;
     margin-bottom: 1.5rem;
-    color: var(--dark-earth);
+    color: var(--color-heading);
   }
 
   .about-text p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 1rem;
-    color: var(--charcoal);
+    color: var(--color-text);
   }
 
   .about-stats {
@@ -285,34 +285,34 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     align-items: center;
     text-align: center;
     padding: 1.5rem;
-    background: var(--cream);
+    background: var(--color-surface-tinted);
     border-radius: 8px;
   }
 
   .stat-number {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--sage-green);
+    color: var(--color-primary);
     font-family: var(--font-display);
   }
 
   .stat-label {
     font-size: 0.95rem;
-    color: var(--charcoal);
+    color: var(--color-text);
     margin-top: 0.5rem;
   }
 
   /* Services Section */
   .services {
     padding: 5rem 0;
-    background: var(--cream);
+    background: var(--color-surface-tinted);
   }
 
   .section-title {
     font-size: 2.25rem;
     text-align: center;
     margin-bottom: 3rem;
-    color: var(--dark-earth);
+    color: var(--color-heading);
   }
 
   .services-grid {
@@ -322,7 +322,7 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   }
 
   .service-card {
-    background: white;
+    background: var(--color-surface);
     padding: 2rem;
     border-radius: 8px;
     transition:
@@ -332,7 +332,7 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
 
   .service-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--color-shadow);
   }
 
   .service-icon {
@@ -343,18 +343,18 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   .service-card h3 {
     font-size: 1.5rem;
     margin-bottom: 0.75rem;
-    color: var(--dark-earth);
+    color: var(--color-heading);
   }
 
   .service-card p {
-    color: var(--charcoal);
+    color: var(--color-text);
     line-height: 1.6;
   }
 
   /* Featured Projects */
   .featured-projects {
     padding: 5rem 0;
-    background: white;
+    background: var(--color-surface);
   }
 
   .projects-grid {
@@ -367,7 +367,7 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s;
-    background: var(--cream);
+    background: var(--color-surface-tinted);
   }
 
   .project-card:hover {
@@ -397,18 +397,18 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   .project-info h3 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--dark-earth);
+    color: var(--color-heading);
   }
 
   .project-location {
-    color: var(--sage-green);
+    color: var(--color-primary);
     font-weight: 500;
   }
 
   /* Testimonials Section */
   .testimonials {
     padding: 5rem 0;
-    background: var(--cream);
+    background: var(--color-surface-tinted);
   }
 
   .testimonials-grid {
@@ -418,10 +418,10 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
   }
 
   .testimonial-card {
-    background: white;
+    background: var(--color-surface);
     padding: 2rem;
     border-radius: 8px;
-    border-left: 4px solid var(--sage-green);
+    border-left: 4px solid var(--color-primary);
   }
 
   .testimonial-content {
@@ -429,18 +429,18 @@ const featuredJobsTitle = homeContent?.fields.featuredJobsTitle;
     line-height: 1.7;
     margin-bottom: 1.5rem;
     font-style: italic;
-    color: var(--charcoal);
+    color: var(--color-text);
   }
 
   .author-name {
     font-weight: 600;
-    color: var(--dark-earth);
+    color: var(--color-heading);
     margin-bottom: 0.25rem;
   }
 
   .author-role {
     font-size: 0.9rem;
-    color: var(--sage-green);
+    color: var(--color-primary);
   }
 
   @media (min-width: 768px) {

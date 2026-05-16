@@ -166,8 +166,8 @@ const nextSlug = navigate(nextIndex);
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.2),
-      rgba(45, 58, 46, 0.7)
+      var(--color-overlay-start),
+      var(--color-overlay-end)
     );
   }
 
@@ -175,7 +175,7 @@ const nextSlug = navigate(nextIndex);
     position: relative;
     z-index: 1;
     width: 100%;
-    color: white;
+    color: var(--color-on-primary);
     padding: 3rem 0;
   }
 
@@ -201,7 +201,7 @@ const nextSlug = navigate(nextIndex);
   /* Job Details Section */
   .job-details {
     padding: 2rem 0;
-    background: white;
+    background: var(--color-surface);
 
     .container {
       display: flex;
@@ -218,7 +218,7 @@ const nextSlug = navigate(nextIndex);
 
   .text-content {
     padding: 2rem;
-    background: var(--cream);
+    background: var(--color-surface-tinted);
     border-radius: 8px;
     height: 100%;
   }
@@ -226,14 +226,14 @@ const nextSlug = navigate(nextIndex);
   .text-content p {
     font-size: 1.125rem;
     line-height: 1.8;
-    color: var(--charcoal);
+    color: var(--color-text);
   }
 
   .image-content {
     height: 100%
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px var(--color-shadow);
   }
 
   .image-content img {
@@ -287,7 +287,7 @@ const nextSlug = navigate(nextIndex);
 
   .job-nav {
     padding: 1rem 0;
-    background: #ffffff;
+    background: var(--color-surface);
   }
 
   .job-nav-inner {
@@ -302,19 +302,19 @@ const nextSlug = navigate(nextIndex);
     display: inline-block;
     padding: 0.75rem 1.25rem;
     border-radius: 6px;
-    background: var(--sage-green);
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
     text-decoration: none;
     font-weight: 600;
   }
 
   .job-nav-btn.prev {
     background: transparent;
-    color: var(--charcoal);
-    border: 1px solid rgba(0,0,0,0.06);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-muted);
   }
 
   .job-nav-btn.next {
-    background: var(--sage-green);
+    background: var(--color-primary);
   }
 </style>
