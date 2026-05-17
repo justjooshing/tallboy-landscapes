@@ -1,0 +1,46 @@
+---
+import { getJobBySlug } from "../lib/jobs/index";
+import { toHttps } from "../lib/url";
+import DoorScene from "../components/intro/DoorScene.astro";
+import MowOverlay from "../components/intro/MowOverlay.astro";
+
+const job = await getJobBySlug("canterbury-entrance-path");
+
+const beforeUrl = toHttps(job?.fields.beforeafterImages?.[0]?.fields?.file?.url);
+const afterUrl  = toHttps(job?.fields.beforeafterImages?.at(-1)?.fields?.file?.url);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Tallboy Landscapes</title>
+    <script is:inline>
+      if (!localStorage.getItem("intro-unlocked")) window.location.replace("/");
+    </script>
+    <link rel="preload" href="/fonts/PlayfairDisplay-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin />
+  </head>
+  <body>
+    <DoorScene beforeUrl={beforeUrl} afterUrl={afterUrl} />
+    <MowOverlay stripCount={10} />
+  </body>
+</html>
+
+<style is:global>
+  @font-face {
+    font-family: "PlayfairDisplayLocal";
+    src: url("/fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "InterLocal";
+    src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+</style>

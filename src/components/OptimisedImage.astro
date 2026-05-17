@@ -1,5 +1,6 @@
 ---
 import { Image } from "@unpic/astro";
+import { toHttps } from "../lib/url";
 
 interface Props {
   src: string;
@@ -10,11 +11,7 @@ interface Props {
 
 const { src, alt, className, priority = false } = Astro.props;
 
-const secureSrc = src.startsWith("//")
-  ? `https:${src}`
-  : src.startsWith("http://")
-    ? src.replace(/^http:\/\//i, "https://")
-    : src;
+const secureSrc = toHttps(src) || src;
 ---
 
 <div class="image-wrapper">

@@ -91,6 +91,37 @@ const isPreview = site === "https://preview.tallboylandscapes.com/";
   </body>
 </html>
 
+<script>
+  const unlock = () => {
+    localStorage.setItem("intro-unlocked", "1");
+    window.location.href = "/intro";
+  };
+
+  // Desktop: type "mynameisotis"
+  const SECRET = "mynameisotis";
+  let buffer = "";
+  window.addEventListener("keydown", e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    buffer = (buffer + e.key).slice(-SECRET.length);
+    if (buffer === SECRET) { buffer = ""; unlock(); }
+  });
+
+  // Mobile: tap the footer copyright 7 times within 2 seconds
+  const TAP_TARGET = 7;
+  const TAP_WINDOW = 2000;
+  let taps = 0;
+  let tapTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const copyright = document.getElementById("footer-copyright");
+  document.addEventListener("click", e => {
+    if (!copyright?.contains(e.target as Node)) return;
+    taps++;
+    if (tapTimer) clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { taps = 0; }, TAP_WINDOW);
+    if (taps >= TAP_TARGET) { taps = 0; unlock(); }
+  });
+</script>
+
 <style is:global>
   @import "../styles/global.css";
 </style>

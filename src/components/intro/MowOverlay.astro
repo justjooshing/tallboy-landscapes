@@ -1,0 +1,311 @@
+---
+import LawnmowerSvg from "./LawnmowerSvg.astro";
+
+interface Props {
+  stripCount?: number;
+}
+
+const { stripCount = 10 } = Astro.props;
+---
+
+<div id="mow-overlay">
+
+  <!-- Black strips — each gets its clip-path shrunk as the mower passes -->
+  <div id="strips" aria-hidden="true">
+    {Array.from({ length: stripCount }, () => (
+      <div class="strip"></div>
+    ))}
+  </div>
+
+  <!-- Moving mower — positioned by JS during traversal, hidden at start -->
+  <div id="mower-el" aria-hidden="true">
+    <LawnmowerSvg />
+  </div>
+
+  <!-- Title + pullcord: centered on screen, fades out when mowing starts -->
+  <div id="intro-content">
+    <h1 class="brand-name">tallboy landscapes</h1>
+
+    <div id="mower-static-wrap">
+      <!-- Static mower for pullcord interaction -->
+      <div id="mower-static">
+        <LawnmowerSvg />
+      </div>
+
+      <!-- Pullcord anchored near the engine pullcord hole in the SVG -->
+      <div id="cord-wrap">
+        <div id="cord-line"></div>
+        <div id="cord-handle" role="button" aria-label="Pull the cord to start the mower" tabindex="0">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="7" width="14" height="6" rx="3"/>
+            <line x1="10" y1="1" x2="10" y2="7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <p id="pull-hint">pull the cord</p>
+  </div>
+
+</div>
+
+<style>
+  #mow-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+  }
+
+  #mow-overlay.done { pointer-events: none; }
+
+  #strips {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .strip {
+    flex: 1;
+    background: #000;
+    /* clip-path driven by JS as mower passes */
+  }
+
+  #mower-el {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    display: none;
+  }
+
+  #mower-el svg {
+    width: clamp(100px, 18vw, 180px);
+    display: block;
+  }
+
+  #intro-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 3;
+    transition: opacity 0.5s ease;
+  }
+
+  #intro-content.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .brand-name {
+    font-family: "PlayfairDisplayLocal", serif;
+    font-size: clamp(1.8rem, 6vw, 4rem);
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  #mower-static-wrap {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #mower-static {
+    width: clamp(130px, 25vw, 190px);
+  }
+
+  #mower-static.shake { animation: mower-shake 0.5s ease; }
+
+  @keyframes mower-shake {
+    0%   { transform: translateX(0) rotate(0deg); }
+    15%  { transform: translateX(-5px) rotate(-1.5deg); }
+    35%  { transform: translateX(5px) rotate(1.5deg); }
+    55%  { transform: translateX(-4px) rotate(-1deg); }
+    75%  { transform: translateX(4px) rotate(1deg); }
+    90%  { transform: translateX(-2px) rotate(-0.5deg); }
+    100% { transform: translateX(0) rotate(0deg); }
+  }
+
+  /* Pullcord positioned relative to the SVG pullcord hole at ~(88,40) in 220×130 viewBox */
+  #cord-wrap {
+    position: absolute;
+    top: 28%;
+    left: 57%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+  }
+
+  #cord-line {
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, #777, #aaa);
+    border-radius: 1px;
+    transition: height 0.08s linear;
+  }
+
+  #cord-handle {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    background: #2a2a2a;
+    border: 2px solid #666;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  #cord-handle:active { cursor: grabbing; background: #3a3a3a; }
+  #cord-handle:focus-visible { outline: 2px solid #888; outline-offset: 2px; }
+
+  #pull-hint {
+    font-family: "InterLocal", sans-serif;
+    font-size: 0.8rem;
+    color: #666;
+    letter-spacing: 0.1em;
+    animation: hint-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  #pull-hint.hidden { visibility: hidden; }
+
+  @keyframes hint-pulse {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 1; }
+  }
+</style>
+
+<script is:inline define:vars={{ stripCount }}>
+  // ── Phase 1: Pullcord ─────────────────────────────────────
+  const cordHandle   = document.getElementById("cord-handle");
+  const cordLine     = document.getElementById("cord-line");
+  const mowerStatic  = document.getElementById("mower-static");
+  const introContent = document.getElementById("intro-content");
+  const overlay      = document.getElementById("mow-overlay");
+  const pullHint     = document.getElementById("pull-hint");
+  const mowerEl      = document.getElementById("mower-el");
+  const strips       = Array.from(document.querySelectorAll(".strip"));
+
+  let pulling    = false;
+  let dragStartY = 0;
+  let pullDist   = 0;
+  let mowStarted = false;
+
+  const PULL_TRIGGER = 60;
+  const MAX_EXT      = 110;
+
+  const getY = (e) => "touches" in e ? e.touches[0].clientY : e.clientY;
+
+  cordHandle.addEventListener("mousedown", e => {
+    if (mowStarted) return;
+    pulling = true;
+    dragStartY = getY(e);
+    pullHint.classList.add("hidden");
+    e.preventDefault();
+  });
+
+  cordHandle.addEventListener("touchstart", e => {
+    if (mowStarted) return;
+    pulling = true;
+    dragStartY = getY(e);
+    pullHint.classList.add("hidden");
+  }, { passive: true });
+
+  const handleCordMove = (e) => {
+    if (!pulling) return;
+    pullDist = Math.max(0, Math.min(getY(e) - dragStartY, MAX_EXT));
+    cordLine.style.height = `${28 + pullDist}px`;
+  };
+
+  window.addEventListener("mousemove", handleCordMove);
+  window.addEventListener("touchmove", handleCordMove, { passive: true });
+
+  const onRelease = () => {
+    if (!pulling) return;
+    pulling = false;
+    cordLine.style.height = "28px";
+    if (pullDist >= PULL_TRIGGER && !mowStarted) {
+      mowStarted = true;
+      mowerStatic.classList.add("shake");
+      mowerStatic.addEventListener("animationend", () => {
+        mowerStatic.classList.remove("shake");
+        startMowing();
+      }, { once: true });
+    }
+    pullDist = 0;
+  };
+
+  window.addEventListener("mouseup", onRelease);
+  window.addEventListener("touchend", onRelease);
+
+  // ── Phase 2: Mower traversal ──────────────────────────────
+  function startMowing() {
+    introContent.classList.add("fade-out");
+    mowerEl.style.display = "block";
+    setTimeout(runMower, 400);
+  }
+
+  function runMower() {
+    const SPEED  = 0.55; // viewport-width-% per frame
+    const stripH = 100 / stripCount;
+
+    let row        = 0;
+    let pct        = 0;
+    let goingRight = true;
+
+    const svgEl = mowerEl.querySelector("svg");
+    const { width: mowerW, height: mowerH } = svgEl.getBoundingClientRect();
+
+    const positionMower = () => {
+      const xPct = goingRight ? pct : 100 - pct;
+      mowerEl.style.left      = `calc(${xPct}% - ${mowerW / 2}px)`;
+      mowerEl.style.top       = `calc(${(row + 1) * stripH}% - ${mowerH}px)`;
+      mowerEl.style.transform = goingRight ? "scaleX(-1)" : "scaleX(1)"
+    };
+
+    const updateStrip = () => {
+      const strip = strips[row];
+      if (!strip) return;
+      // Clip the remaining (un-mowed) black portion of this strip
+      strip.style.clipPath = goingRight
+        ? `inset(0 0 0 ${pct}%)`   // going right: clip from left edge up to mower
+        : `inset(0 ${pct}% 0 0)`;  // going left: clip from right edge up to mower
+    };
+
+    const tick = () => {
+      pct += SPEED;
+
+      if (pct >= 100) {
+        strips[row].style.clipPath = "inset(0 0 0 100%)";
+        row++;
+
+        if (row >= stripCount) {
+          mowerEl.style.display = "none";
+          overlay.classList.add("done");
+          return;
+        }
+
+        goingRight = !goingRight;
+        pct = 0;
+      }
+
+      updateStrip();
+      positionMower();
+      requestAnimationFrame(tick);
+    };
+
+    positionMower();
+    requestAnimationFrame(tick);
+  }
+</script>

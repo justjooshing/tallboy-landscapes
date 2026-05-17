@@ -1,0 +1,190 @@
+---
+interface Props {
+  beforeUrl: string;
+  afterUrl: string;
+}
+
+const { beforeUrl, afterUrl } = Astro.props;
+---
+
+<div id="scene">
+  <img id="after-img" src={afterUrl} alt="Canterbury entrance path — after" />
+
+  <!--
+    Full-screen doors. Left door: hinge on left, opens with positive rotateY.
+    Right door: hinge on right, opens with negative rotateY.
+    Each shows the same before image but positioned so left/right halves align.
+  -->
+  <div id="doorframe">
+    <div id="door-left" class="door">
+      <img src={beforeUrl} alt="" class="door-img door-img-left" draggable="false" />
+      <div class="door-handle"></div>
+    </div>
+    <div id="door-right" class="door">
+      <img src={beforeUrl} alt="" class="door-img door-img-right" draggable="false" />
+      <div class="door-handle"></div>
+    </div>
+
+    <!-- Inside doorframe so it scales and fades with the zoom-through transform -->
+    <div id="frame-border" aria-hidden="true"></div>
+  </div>
+</div>
+
+<style>
+  #scene {
+    position: fixed;
+    inset: 0;
+  }
+
+  #after-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 0;
+  }
+
+  #after-img.visible { opacity: 1; }
+
+  #doorframe {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    perspective: 1000px;
+    z-index: 1;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s ease;
+  }
+
+  #doorframe.zoom-through {
+    transform: scale(4) translateZ(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .door {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+  }
+
+  .door:active { cursor: grabbing; }
+
+  /* perspective() is omitted — the parent #doorframe's perspective: 1000px handles it.
+     Having both causes compound distortion that makes rotation nearly imperceptible. */
+  #door-left  { transform-origin: left center;  transform: rotateY(0deg); }
+  #door-right { transform-origin: right center; transform: rotateY(-6deg); }
+
+  /*
+    Each door shows 200% width of the image so left/right halves align at the seam.
+    overflow: hidden on .door does the clipping.
+  */
+  .door-img {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 200%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .door-img-left  { left: 0; }
+  .door-img-right { right: 0; left: auto; }
+
+  .door-handle {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 52px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #e0b87a 0%, #a87c3a 100%);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  #door-left  .door-handle { right: 14px; }
+  #door-right .door-handle { left: 14px; }
+
+  #frame-border {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 14px #5c3d2a,
+      inset 0 0 0 18px #7a5038,
+      inset 0 0 0 26px #3d2416,
+      inset 0 0 60px rgba(0,0,0,0.5);
+  }
+</style>
+
+<script>
+  const doorLeft  = document.getElementById("door-left")!;
+  const doorRight = document.getElementById("door-right")!;
+  const doorframe = document.getElementById("doorframe")!;
+  const afterImg  = document.getElementById("after-img") as HTMLImageElement;
+
+  // Left door:  0 → +85 (positive rotateY, hinge left)
+  // Right door: -6 → -85 (negative rotateY, hinge right), starts slightly ajar
+  let leftAngle  = 0;
+  let rightAngle = -6;
+  const MAX_OPEN  = 85;
+  const ZOOM_TRIG = 78;
+  let zoomed = false;
+
+  const applyDoors = () => {
+    doorLeft.style.transform  = `rotateY(${leftAngle}deg)`;
+    doorRight.style.transform = `rotateY(${rightAngle}deg)`;
+
+    const lPct = leftAngle / MAX_OPEN;
+    const rPct = Math.abs(rightAngle) / MAX_OPEN;
+    afterImg.style.opacity = String(Math.min(1, ((lPct + rPct) / 2) * 1.8));
+
+    if (!zoomed && leftAngle >= ZOOM_TRIG && Math.abs(rightAngle) >= ZOOM_TRIG) {
+      zoomed = true;
+      afterImg.classList.add("visible");
+      doorframe.classList.add("zoom-through");
+    }
+  };
+
+  const dragLeft  = { active: false, startX: 0 };
+  const dragRight = { active: false, startX: 0 };
+
+  const getX = (e: MouseEvent | TouchEvent) =>
+    "touches" in e ? e.touches[0]!.clientX : e.clientX;
+
+  doorLeft.addEventListener("mousedown",  e => { dragLeft.active = true; dragLeft.startX = getX(e); e.preventDefault(); });
+  doorLeft.addEventListener("touchstart", e => { dragLeft.active = true; dragLeft.startX = e.touches[0]!.clientX; }, { passive: true });
+
+  doorRight.addEventListener("mousedown",  e => { dragRight.active = true; dragRight.startX = getX(e); e.preventDefault(); });
+  doorRight.addEventListener("touchstart", e => { dragRight.active = true; dragRight.startX = e.touches[0]!.clientX; }, { passive: true });
+
+  const handleMove = (e: MouseEvent | TouchEvent) => {
+    const x = getX(e);
+    if (dragLeft.active) {
+      const dx = x - dragLeft.startX;
+      dragLeft.startX = x;
+      leftAngle = Math.max(0, Math.min(MAX_OPEN, leftAngle - dx / 2.5));
+      applyDoors();
+    }
+    if (dragRight.active) {
+      const dx = x - dragRight.startX;
+      dragRight.startX = x;
+      rightAngle = Math.max(-MAX_OPEN, Math.min(-6, rightAngle - dx / 2.5));
+      applyDoors();
+    }
+  };
+
+  window.addEventListener("mousemove", handleMove);
+  window.addEventListener("touchmove", handleMove, { passive: true });
+
+  const stopDrag = () => { dragLeft.active = false; dragRight.active = false; };
+  window.addEventListener("mouseup", stopDrag);
+  window.addEventListener("touchend", stopDrag);
+</script>
