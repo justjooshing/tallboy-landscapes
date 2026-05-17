@@ -3,6 +3,7 @@ import { getJobBySlug } from "../lib/jobs/index";
 import { toHttps } from "../lib/url";
 import DoorScene from "../components/intro/DoorScene.astro";
 import MowOverlay from "../components/intro/MowOverlay.astro";
+import AgentChat from "../components/AgentChat.astro";
 
 const job = await getJobBySlug("canterbury-entrance-path");
 
@@ -26,6 +27,7 @@ const afterUrl  = toHttps(job?.fields.beforeafterImages?.at(-1)?.fields?.file?.u
   <body>
     <DoorScene beforeUrl={beforeUrl} afterUrl={afterUrl} />
     <MowOverlay stripCount={10} />
+    <AgentChat />
   </body>
 </html>
 

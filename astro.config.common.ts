@@ -47,6 +47,10 @@ export const setupConfig = ({ output, site }: ConfigProps) =>
           context: "server",
           access: "public",
         }),
+        GEMINI_API_KEY: envField.string({
+          context: "server",
+          access: "secret",
+        }),
       },
     },
   });
