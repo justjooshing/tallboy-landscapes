@@ -8,7 +8,7 @@ const { beforeUrl, afterUrl } = Astro.props;
 ---
 
 <div id="scene">
-  <img id="after-img" src={afterUrl} alt="Canterbury entrance path — after" />
+  <img id="after-img" src={afterUrl} alt="" />
 
   <!--
     Full-screen doors. Left door: hinge on left, opens with positive rotateY.
@@ -129,6 +129,8 @@ const { beforeUrl, afterUrl } = Astro.props;
   const doorRight = document.getElementById("door-right")!;
   const doorframe = document.getElementById("doorframe")!;
   const afterImg  = document.getElementById("after-img") as HTMLImageElement;
+  const doorImgLeft  = doorLeft.querySelector<HTMLImageElement>(".door-img-left")!;
+  const doorImgRight = doorRight.querySelector<HTMLImageElement>(".door-img-right")!;
 
   // Left door:  0 → +85 (positive rotateY, hinge left)
   // Right door: -6 → -85 (negative rotateY, hinge right), starts slightly ajar
@@ -190,4 +192,35 @@ const { beforeUrl, afterUrl } = Astro.props;
   const stopDrag = () => { dragLeft.active = false; dragRight.active = false; };
   window.addEventListener("mouseup", stopDrag);
   window.addEventListener("touchend", stopDrag);
+
+  window.addEventListener("job:navigate", (e: Event) => {
+    const { beforeUrl, afterUrl } = (e as CustomEvent).detail as { beforeUrl: string; afterUrl: string };
+
+    // Suppress CSS transitions so the reset is instant (not a 1.2s animated snap-back)
+    doorframe.style.transition = "none";
+    afterImg.style.transition  = "none";
+
+    leftAngle  = 0;
+    rightAngle = -6;
+    zoomed     = false;
+    dragLeft.active  = false;
+    dragRight.active = false;
+
+    doorframe.classList.remove("zoom-through");
+    doorframe.style.transform = "";
+    doorframe.style.opacity   = "";
+
+    afterImg.classList.remove("visible");
+    afterImg.src = afterUrl;
+    doorImgLeft.src  = beforeUrl;
+    doorImgRight.src = beforeUrl;
+
+    applyDoors();
+
+    // Re-enable transitions after the reset paint has committed
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      doorframe.style.transition = "";
+      afterImg.style.transition  = "";
+    }));
+  });
 </script>

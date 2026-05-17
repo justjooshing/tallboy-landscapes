@@ -23,14 +23,6 @@ const GEMINI_URL =
 // Module-level cache — persists for the Worker instance lifetime.
 const replyCache = new Map<string, string>();
 
-// Pre-warm these on first request so suggested buttons are always instant.
-const INTRO_SLUG = "canterbury-entrance-path";
-const PREWARM_QUESTIONS = [
-  "Where is this job located?",
-  "What materials were used in this job?",
-];
-let prewarmed = false;
-
 async function callGemini(context: string, message: string, history: ChatMessage[]): Promise<string> {
   const contents = [
     ...history.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
@@ -60,27 +52,6 @@ async function callGemini(context: string, message: string, history: ChatMessage
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't generate a response.";
 }
 
-async function prewarm() {
-  if (prewarmed) return;
-  prewarmed = true;
-  try {
-    const job = await getJobBySlug(INTRO_SLUG);
-    if (!job) return;
-    const context = serializeJobsForContext([job]);
-    await Promise.all(
-      PREWARM_QUESTIONS.map(async q => {
-        const key = `${INTRO_SLUG}:${q.toLowerCase()}`;
-        if (replyCache.has(key)) return;
-        const reply = await callGemini(context, q, []);
-        replyCache.set(key, reply);
-      })
-    );
-  } catch (e) {
-    console.error("Prewarm failed:", e);
-    prewarmed = false; // retry on next request
-  }
-}
-
 export const GET: APIRoute = () =>
   new Response(JSON.stringify({ ok: true }), { status: 200 });
 
@@ -97,9 +68,6 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: "Message required" }), { status: 400 });
   }
 
-  // Fire pre-warm in background on first request (don't block)
-  if (!prewarmed) prewarm().catch(console.error);
-
   // Cache only single-turn requests (no history); multi-turn is too context-dependent
   const cacheKey = history.length === 0
     ? `${slug ?? "all"}:${message.trim().toLowerCase()}`
@@ -111,7 +79,6 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-  console.log("Not in cache, calling Gemini with message:", message);
 
   const job = slug ? await getJobBySlug(slug) : null;
   const jobs = job ? [job] : await getJobs();

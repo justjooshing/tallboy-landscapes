@@ -1,8 +1,9 @@
 ---
 interface Props {
-  slug: string;
+  jobs: { slug: string; beforeUrl: string; afterUrl: string }[];
+  initialIndex: number;
 }
-const { slug } = Astro.props;
+const { jobs, initialIndex } = Astro.props;
 
 const SUGGESTIONS = [
   { label: "Where is this?",            q: "Where is this job located?" },
@@ -12,7 +13,8 @@ const SUGGESTIONS = [
 
 <div id="otis-root">
   <div id="otis-bubble" hidden>
-    <p class="greeting">Hi, I'm Otis! Would you like to know anything about this job?</p>
+    <p class="greeting greeting-first">Hi, I'm Otis! Would you like to know anything about this job?</p>
+    <p class="greeting greeting-return" hidden>Here's another one! Ask me anything.</p>
     <div id="suggestion-btns">
       {SUGGESTIONS.map(s => (
         <button class="suggestion-btn" data-q={s.q}>{s.label}</button>
@@ -24,6 +26,7 @@ const SUGGESTIONS = [
       <input id="otis-input" type="text" placeholder="Ask something else…" autocomplete="off" maxlength="200" />
       <button type="submit" id="otis-submit">→</button>
     </form>
+    <button id="otis-next">Next job →</button>
   </div>
 
   <div id="otis-figure">
@@ -220,46 +223,79 @@ const SUGGESTIONS = [
 
   #otis-submit:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
   #otis-submit:disabled { opacity: 0.38; cursor: default; }
+
+  #otis-next {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0;
+    background: none;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.35);
+    font-family: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-align: right;
+    transition: color 0.15s;
+  }
+
+  #otis-next:hover:not(:disabled) { color: rgba(255, 255, 255, 0.75); }
+  #otis-next:disabled { opacity: 0.2; cursor: default; }
 </style>
 
-<script is:inline define:vars={{ slug }}>
-  const root      = document.getElementById("otis-root");
-  const bubble    = document.getElementById("otis-bubble");
-  const answerEl  = document.getElementById("otis-answer");
-  const form      = document.getElementById("otis-form");
-  const input     = document.getElementById("otis-input");
-  const submitBtn = document.getElementById("otis-submit");
-  const suggBtns  = Array.from(document.querySelectorAll(".suggestion-btn[data-q]"));
+<script is:inline define:vars={{ jobs, initialIndex }}>
+  const root          = document.getElementById("otis-root");
+  const bubble        = document.getElementById("otis-bubble");
+  const answerEl      = document.getElementById("otis-answer");
+  const form          = document.getElementById("otis-form");
+  const input         = document.getElementById("otis-input");
+  const submitBtn     = document.getElementById("otis-submit");
+  const nextBtn       = document.getElementById("otis-next");
+  const greetingFirst  = document.querySelector(".greeting-first");
+  const greetingReturn = document.querySelector(".greeting-return");
+  const suggBtns      = Array.from(document.querySelectorAll(".suggestion-btn[data-q]"));
 
-  const cache = new Map(); // only suggested questions are cached
-  let history = [];
-  let busy    = false;
+  const cache = new Map();
+  let history      = [];
+  let busy         = false;
+  let currentIndex = initialIndex;
+  let hasMetOtis   = false;
 
-  // ── Reveal: walk in when doors zoom through ────────────────
+  // ── Reveal ────────────────────────────────────────────────
   window.addEventListener("otis:reveal", () => {
-    root.classList.add("walking");
+    if (!hasMetOtis) {
+      hasMetOtis = true;
+      root.classList.add("walking");
+      const onEnd = (e) => {
+        if (e.target !== root || e.animationName !== "otis-walk-in") return;
+        root.removeEventListener("animationend", onEnd);
+        root.querySelectorAll("animateTransform").forEach(el => el.remove());
+        root.classList.remove("walking");
+        root.classList.add("arrived");
+        setTimeout(() => { bubble.hidden = false; }, 350);
+      };
+      root.addEventListener("animationend", onEnd);
+    } else {
+      greetingFirst.hidden  = true;
+      greetingReturn.hidden = false;
+      resetAnswer();
+      nextBtn.hidden = false;
+      bubble.hidden  = false;
+    }
+  });
 
-    const onEnd = (e) => {
-      if (e.target !== root || e.animationName !== "otis-walk-in") return;
-      root.removeEventListener("animationend", onEnd);
+  function resetAnswer() {
+    answerEl.hidden = true;
+    answerEl.textContent = "";
+  }
 
-      // Freeze limbs at standing position by removing SMIL animations
-      root.querySelectorAll("animateTransform").forEach(el => el.remove());
-
-      root.classList.remove("walking");
-      root.classList.add("arrived");
-
-      setTimeout(() => { bubble.hidden = false; }, 350);
-    };
-
-    root.addEventListener("animationend", onEnd);
-  }, { once: true });
-
-  // ── API helper ─────────────────────────────────────────────
+  // ── API helper ────────────────────────────────────────────
   async function ask(question, { withHistory = false, cacheable = false } = {}) {
-    const key = question.trim().toLowerCase();
+    const slug = jobs[currentIndex].slug;
+    const key = `${slug}:${question.trim().toLowerCase()}`;
     if (cacheable && cache.has(key)) return cache.get(key);
-
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -269,7 +305,6 @@ const SUGGESTIONS = [
         history: withHistory ? history : [],
       }),
     });
-
     const data = await res.json();
     const reply = data.reply ?? data.error ?? "Sorry, couldn't get an answer.";
     if (cacheable) cache.set(key, reply);
@@ -285,16 +320,28 @@ const SUGGESTIONS = [
   function setBusy(on) {
     busy = on;
     submitBtn.disabled = on;
-    input.disabled = on;
+    input.disabled     = on;
+    nextBtn.disabled   = on;
     suggBtns.forEach(b => { b.disabled = on; });
   }
+
+  // ── Next job ──────────────────────────────────────────────
+  nextBtn?.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % jobs.length;
+    history      = [];
+    bubble.hidden  = true;
+    nextBtn.hidden = true;
+    resetAnswer();
+    input.value = "";
+    window.dispatchEvent(new CustomEvent("job:navigate", { detail: jobs[currentIndex] }));
+  });
 
   // ── Contact CTA ───────────────────────────────────────────
   document.getElementById("otis-cta")?.addEventListener("click", () => {
     window.dispatchEvent(new CustomEvent("contact:open"));
   });
 
-  // ── Suggested questions ────────────────────────────────────
+  // ── Suggested questions ───────────────────────────────────
   suggBtns.forEach(btn => {
     btn.addEventListener("click", async () => {
       if (busy) return;
@@ -306,7 +353,7 @@ const SUGGESTIONS = [
     });
   });
 
-  // ── Free text ──────────────────────────────────────────────
+  // ── Free text ─────────────────────────────────────────────
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const question = input.value.trim();

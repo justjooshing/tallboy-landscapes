@@ -1,15 +1,21 @@
 ---
-import { getJobBySlug } from "../lib/jobs/index";
+import { getJobs } from "../lib/jobs/index";
 import { toHttps } from "../lib/url";
 import DoorScene from "../components/intro/DoorScene.astro";
 import MowOverlay from "../components/intro/MowOverlay.astro";
 import OtisAgent from "../components/intro/OtisAgent.astro";
 import ContactModal from "../components/intro/ContactModal.astro";
 
-const job = await getJobBySlug("canterbury-entrance-path");
+const jobs = await getJobs();
 
-const beforeUrl = toHttps(job?.fields.beforeafterImages?.[0]?.fields?.file?.url);
-const afterUrl  = toHttps(job?.fields.beforeafterImages?.at(-1)?.fields?.file?.url);
+const allJobsData = jobs.map(j => ({
+  slug: j.fields.slug,
+  beforeUrl: toHttps(j.fields.beforeafterImages?.[0]?.fields?.file?.url || j.fields.images?.[0]?.fields?.file?.url),
+  afterUrl:  toHttps(j.fields.beforeafterImages?.at(-1)?.fields?.file?.url || j.fields.images?.at(-1)?.fields?.file?.url),
+}));
+
+const initialIndex = Math.floor(Math.random() * allJobsData.length);
+const { beforeUrl, afterUrl } = allJobsData[initialIndex];
 ---
 
 <!doctype html>
@@ -28,7 +34,7 @@ const afterUrl  = toHttps(job?.fields.beforeafterImages?.at(-1)?.fields?.file?.u
   <body>
     <DoorScene beforeUrl={beforeUrl} afterUrl={afterUrl} />
     <MowOverlay stripCount={10} />
-    <OtisAgent slug="canterbury-entrance-path" />
+    <OtisAgent jobs={allJobsData} initialIndex={initialIndex} />
     <ContactModal />
   </body>
 </html>
