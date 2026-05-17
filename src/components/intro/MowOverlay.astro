@@ -76,10 +76,11 @@ const { stripCount = 10 } = Astro.props;
     pointer-events: none;
     z-index: 2;
     display: none;
+    width: 120px;
   }
 
   #mower-el svg {
-    width: clamp(100px, 18vw, 180px);
+    width: 100%;
     display: block;
   }
 
@@ -117,7 +118,7 @@ const { stripCount = 10 } = Astro.props;
   }
 
   #mower-static {
-    width: clamp(130px, 25vw, 190px);
+    width: 160px;
   }
 
   #mower-static.shake { animation: mower-shake 0.5s ease; }
@@ -132,15 +133,16 @@ const { stripCount = 10 } = Astro.props;
     100% { transform: translateX(0) rotate(0deg); }
   }
 
-  /* Pullcord positioned relative to the SVG pullcord hole at ~(88,40) in 220×130 viewBox */
+  /* Pullcord positioned at ripcord housing (155,42) in 240×140 viewBox — angled to match handle */
   #cord-wrap {
     position: absolute;
     top: 28%;
-    left: 57%;
+    left: 64%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    transform-origin: top center;
+    align-items: flex-start;
+    transform: rotate(250deg);
+    transform-origin: top left;
   }
 
   #cord-line {
@@ -198,6 +200,7 @@ const { stripCount = 10 } = Astro.props;
   const strips       = Array.from(document.querySelectorAll(".strip"));
 
   let pulling    = false;
+  let dragStartX = 0;
   let dragStartY = 0;
   let pullDist   = 0;
   let mowStarted = false;
@@ -205,11 +208,18 @@ const { stripCount = 10 } = Astro.props;
   const PULL_TRIGGER = 60;
   const MAX_EXT      = 110;
 
+  // Pull axis: 250deg CSS rotation = 160deg in screen coords (left + slightly down)
+  const PULL_ANGLE = (250 + 90) * Math.PI / 180; // radians
+  const PULL_DX = Math.cos(PULL_ANGLE); // ≈ -0.94
+  const PULL_DY = Math.sin(PULL_ANGLE); // ≈ 0.34
+
+  const getX = (e) => "touches" in e ? e.touches[0].clientX : e.clientX;
   const getY = (e) => "touches" in e ? e.touches[0].clientY : e.clientY;
 
   cordHandle.addEventListener("mousedown", e => {
     if (mowStarted) return;
     pulling = true;
+    dragStartX = getX(e);
     dragStartY = getY(e);
     pullHint.classList.add("hidden");
     e.preventDefault();
@@ -218,13 +228,18 @@ const { stripCount = 10 } = Astro.props;
   cordHandle.addEventListener("touchstart", e => {
     if (mowStarted) return;
     pulling = true;
+    dragStartX = getX(e);
     dragStartY = getY(e);
     pullHint.classList.add("hidden");
   }, { passive: true });
 
   const handleCordMove = (e) => {
     if (!pulling) return;
-    pullDist = Math.max(0, Math.min(getY(e) - dragStartY, MAX_EXT));
+    const dx = getX(e) - dragStartX;
+    const dy = getY(e) - dragStartY;
+    // Project movement onto pull axis
+    const projected = dx * PULL_DX + dy * PULL_DY;
+    pullDist = Math.max(0, Math.min(projected, MAX_EXT));
     cordLine.style.height = `${28 + pullDist}px`;
   };
 
@@ -257,36 +272,38 @@ const { stripCount = 10 } = Astro.props;
   }
 
   function runMower() {
-    const SPEED  = 0.55; // viewport-width-% per frame
-    const stripH = 100 / stripCount;
+    const SPEED_PX = 6; // pixels per frame — consistent feel across screen sizes
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    const stripH = viewportH / stripCount;
 
     let row        = 0;
-    let pct        = 0;
+    let xPos       = 0; // pixels from left
     let goingRight = true;
 
-    const svgEl = mowerEl.querySelector("svg");
-    const { width: mowerW, height: mowerH } = svgEl.getBoundingClientRect();
+    const mowerW = 120; // fixed width matches CSS
+    const mowerH = mowerW * (140 / 240); // aspect ratio from viewBox
 
     const positionMower = () => {
-      const xPct = goingRight ? pct : 100 - pct;
-      mowerEl.style.left      = `calc(${xPct}% - ${mowerW / 2}px)`;
-      mowerEl.style.top       = `calc(${(row + 1) * stripH}% - ${mowerH}px)`;
-      mowerEl.style.transform = goingRight ? "scaleX(-1)" : "scaleX(1)"
+      const x = goingRight ? xPos : viewportW - xPos;
+      mowerEl.style.left      = `${x - mowerW / 2}px`;
+      mowerEl.style.top       = `${(row + 1) * stripH - mowerH}px`;
+      mowerEl.style.transform = goingRight ? "scaleX(-1)" : "scaleX(1)";
     };
 
     const updateStrip = () => {
       const strip = strips[row];
       if (!strip) return;
-      // Clip the remaining (un-mowed) black portion of this strip
+      const pct = (xPos / viewportW) * 100;
       strip.style.clipPath = goingRight
-        ? `inset(0 0 0 ${pct}%)`   // going right: clip from left edge up to mower
-        : `inset(0 ${pct}% 0 0)`;  // going left: clip from right edge up to mower
+        ? `inset(0 0 0 ${pct}%)`
+        : `inset(0 ${pct}% 0 0)`;
     };
 
     const tick = () => {
-      pct += SPEED;
+      xPos += SPEED_PX;
 
-      if (pct >= 100) {
+      if (xPos >= viewportW) {
         strips[row].style.clipPath = "inset(0 0 0 100%)";
         row++;
 
@@ -297,7 +314,7 @@ const { stripCount = 10 } = Astro.props;
         }
 
         goingRight = !goingRight;
-        pct = 0;
+        xPos = 0;
       }
 
       updateStrip();
