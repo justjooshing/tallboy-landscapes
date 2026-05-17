@@ -150,6 +150,9 @@ const { beforeUrl, afterUrl } = Astro.props;
       zoomed = true;
       afterImg.classList.add("visible");
       doorframe.classList.add("zoom-through");
+      doorframe.addEventListener("transitionend", () => {
+        window.dispatchEvent(new CustomEvent("otis:reveal"));
+      }, { once: true });
     }
   };
 

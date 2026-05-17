@@ -1,0 +1,113 @@
+---
+import ContactForm from "../ContactForm.astro";
+---
+
+<div id="contact-modal" aria-modal="true" role="dialog" aria-labelledby="contact-modal-title">
+  <div id="contact-modal-backdrop"></div>
+  <div id="contact-modal-panel">
+    <div id="contact-modal-header">
+      <h2 id="contact-modal-title">Get in touch</h2>
+      <button id="contact-modal-close" aria-label="Close">✕</button>
+    </div>
+    <ContactForm />
+  </div>
+</div>
+
+<style>
+  /* Hidden by default via display:none — fully removes from layout and hit testing.
+     Animation is scoped to .open so the GPU compositing layer is torn down when
+     .open is removed (animation gone) before display:none kicks in — no ghost layer. */
+  #contact-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  #contact-modal.open {
+    display: flex;
+  }
+
+  #contact-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  #contact-modal-panel {
+    position: relative;
+    background: rgba(12, 12, 12, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.75rem;
+    width: min(600px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    font-family: "InterLocal", sans-serif;
+
+    --color-primary:             hsl(88 19% 35%);
+    --color-accent:              hsl(31 53% 64%);
+    --color-footer-text:         hsl(36 20% 95%);
+    --color-footer-input-bg:     rgba(255, 255, 255, 0.06);
+    --color-footer-input-border: rgba(255, 255, 255, 0.18);
+    --color-footer-input-focus:  rgba(255, 255, 255, 0.1);
+    --color-footer-placeholder:  rgba(255, 255, 255, 0.38);
+  }
+
+  /* Animation scoped to .open — replays fresh on every open */
+  #contact-modal.open #contact-modal-panel {
+    animation: modal-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes modal-in {
+    from { transform: scale(0.92); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  #contact-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  #contact-modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  #contact-modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  #contact-modal-close:hover { color: #fff; }
+</style>
+
+<script>
+  const modal    = document.getElementById("contact-modal")!;
+  const backdrop = document.getElementById("contact-modal-backdrop")!;
+  const closeBtn = document.getElementById("contact-modal-close")!;
+
+  const open  = () => modal.classList.add("open");
+  const close = () => modal.classList.remove("open");
+
+  window.addEventListener("contact:open", open);
+  backdrop.addEventListener("click", close);
+  closeBtn.addEventListener("click", close);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+</script>

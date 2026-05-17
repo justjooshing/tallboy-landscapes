@@ -1,0 +1,325 @@
+---
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+
+const SUGGESTIONS = [
+  { label: "Where is this?",            q: "Where is this job located?" },
+  { label: "What materials were used?", q: "What materials were used in this job?" },
+];
+---
+
+<div id="otis-root">
+  <div id="otis-bubble" hidden>
+    <p class="greeting">Hi, I'm Otis! Would you like to know anything about this job?</p>
+    <div id="suggestion-btns">
+      {SUGGESTIONS.map(s => (
+        <button class="suggestion-btn" data-q={s.q}>{s.label}</button>
+      ))}
+      <button class="suggestion-btn suggestion-cta" id="otis-cta">How much for mine? →</button>
+    </div>
+    <div id="otis-answer" hidden></div>
+    <form id="otis-form">
+      <input id="otis-input" type="text" placeholder="Ask something else…" autocomplete="off" maxlength="200" />
+      <button type="submit" id="otis-submit">→</button>
+    </form>
+  </div>
+
+  <div id="otis-figure">
+    <svg viewBox="0 0 50 100" width="65" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Head -->
+      <circle cx="25" cy="11" r="9" fill="none" stroke="#fff" stroke-width="2"/>
+      <!-- Eyes -->
+      <circle cx="21.5" cy="10" r="1.5" fill="#fff"/>
+      <circle cx="28.5" cy="10" r="1.5" fill="#fff"/>
+      <!-- Smile -->
+      <path d="M 21 15 Q 25 18 29 15" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Body -->
+      <line x1="25" y1="20" x2="25" y2="57" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <!-- Left arm (standing position: slightly out) — animateTransform swings during walk -->
+      <line x1="25" y1="34" x2="14" y2="51" stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate"
+          values="-22 25 34; 22 25 34; -22 25 34" dur="0.55s" repeatCount="indefinite"/>
+      </line>
+      <!-- Right arm (opposite phase) -->
+      <line x1="25" y1="34" x2="36" y2="51" stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate"
+          values="22 25 34; -22 25 34; 22 25 34" dur="0.55s" repeatCount="indefinite"/>
+      </line>
+      <!-- Left leg -->
+      <line x1="25" y1="57" x2="16" y2="83" stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate"
+          values="22 25 57; -22 25 57; 22 25 57" dur="0.55s" repeatCount="indefinite"/>
+      </line>
+      <!-- Right leg (opposite phase) -->
+      <line x1="25" y1="57" x2="34" y2="83" stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate"
+          values="-22 25 57; 22 25 57; -22 25 57" dur="0.55s" repeatCount="indefinite"/>
+      </line>
+    </svg>
+  </div>
+</div>
+
+<style>
+  #otis-root {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 30;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  #otis-root.walking {
+    display: flex;
+    animation: otis-walk-in 1.8s cubic-bezier(0.3, 0, 0.5, 1) forwards;
+  }
+
+  #otis-root.arrived {
+    display: flex;
+    transform: translateX(0);
+  }
+
+  @keyframes otis-walk-in {
+    from { transform: translateX(calc(-2rem - 65px)); }
+    to   { transform: translateX(0); }
+  }
+
+  /* Body bob while walking */
+  #otis-root.walking #otis-figure {
+    animation: otis-bob 0.275s ease-in-out infinite alternate;
+  }
+
+  @keyframes otis-bob {
+    from { transform: translateY(0px); }
+    to   { transform: translateY(-4px); }
+  }
+
+  /* Speech bubble */
+  #otis-bubble {
+    background: rgba(10, 10, 10, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 1rem 1rem 0.75rem;
+    width: min(290px, calc(100vw - 4rem));
+    color: #fff;
+    font-family: "InterLocal", sans-serif;
+    font-size: 0.8rem;
+    position: relative;
+    animation: bubble-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  #otis-bubble[hidden] { display: none; }
+
+  @keyframes bubble-pop {
+    from { transform: scale(0.85); opacity: 0; transform-origin: bottom left; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  /* Tail pointing down-left toward Otis's head */
+  #otis-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 20px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid rgba(10, 10, 10, 0.82);
+  }
+
+  .greeting {
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+    color: #ddd;
+  }
+
+  #suggestion-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .suggestion-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #e0e0e0;
+    border-radius: 999px;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .suggestion-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.18); }
+  .suggestion-btn:disabled { opacity: 0.38; cursor: default; }
+
+  .suggestion-cta {
+    background: hsl(88 19% 35%);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .suggestion-cta:hover { opacity: 0.88; }
+
+  #otis-answer {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.55;
+    color: #ddd;
+    max-height: 130px;
+    overflow-y: auto;
+    font-size: 0.78rem;
+  }
+
+  #otis-answer[hidden] { display: none; }
+
+  #otis-form {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  #otis-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 7px;
+    padding: 0.35rem 0.55rem;
+    color: #fff;
+    font-size: 0.75rem;
+    font-family: inherit;
+    outline: none;
+    min-width: 0;
+  }
+
+  #otis-input::placeholder { color: rgba(255, 255, 255, 0.35); }
+  #otis-input:focus { border-color: rgba(255, 255, 255, 0.45); }
+  #otis-input:disabled { opacity: 0.5; }
+
+  #otis-submit {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #fff;
+    border-radius: 7px;
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  #otis-submit:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
+  #otis-submit:disabled { opacity: 0.38; cursor: default; }
+</style>
+
+<script is:inline define:vars={{ slug }}>
+  const root      = document.getElementById("otis-root");
+  const bubble    = document.getElementById("otis-bubble");
+  const answerEl  = document.getElementById("otis-answer");
+  const form      = document.getElementById("otis-form");
+  const input     = document.getElementById("otis-input");
+  const submitBtn = document.getElementById("otis-submit");
+  const suggBtns  = Array.from(document.querySelectorAll(".suggestion-btn[data-q]"));
+
+  const cache = new Map(); // only suggested questions are cached
+  let history = [];
+  let busy    = false;
+
+  // ── Reveal: walk in when doors zoom through ────────────────
+  window.addEventListener("otis:reveal", () => {
+    root.classList.add("walking");
+
+    const onEnd = (e) => {
+      if (e.target !== root || e.animationName !== "otis-walk-in") return;
+      root.removeEventListener("animationend", onEnd);
+
+      // Freeze limbs at standing position by removing SMIL animations
+      root.querySelectorAll("animateTransform").forEach(el => el.remove());
+
+      root.classList.remove("walking");
+      root.classList.add("arrived");
+
+      setTimeout(() => { bubble.hidden = false; }, 350);
+    };
+
+    root.addEventListener("animationend", onEnd);
+  }, { once: true });
+
+  // ── API helper ─────────────────────────────────────────────
+  async function ask(question, { withHistory = false, cacheable = false } = {}) {
+    const key = question.trim().toLowerCase();
+    if (cacheable && cache.has(key)) return cache.get(key);
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: question,
+        slug,
+        history: withHistory ? history : [],
+      }),
+    });
+
+    const data = await res.json();
+    const reply = data.reply ?? data.error ?? "Sorry, couldn't get an answer.";
+    if (cacheable) cache.set(key, reply);
+    return reply;
+  }
+
+  function showAnswer(text) {
+    answerEl.textContent = text;
+    answerEl.hidden = false;
+    answerEl.scrollTop = 0;
+  }
+
+  function setBusy(on) {
+    busy = on;
+    submitBtn.disabled = on;
+    input.disabled = on;
+    suggBtns.forEach(b => { b.disabled = on; });
+  }
+
+  // ── Contact CTA ───────────────────────────────────────────
+  document.getElementById("otis-cta")?.addEventListener("click", () => {
+    window.dispatchEvent(new CustomEvent("contact:open"));
+  });
+
+  // ── Suggested questions ────────────────────────────────────
+  suggBtns.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if (busy) return;
+      setBusy(true);
+      showAnswer("…");
+      const answer = await ask(btn.dataset.q, { cacheable: true });
+      showAnswer(answer);
+      setBusy(false);
+    });
+  });
+
+  // ── Free text ──────────────────────────────────────────────
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question || busy) return;
+    input.value = "";
+    setBusy(true);
+    showAnswer("…");
+    const answer = await ask(question, { withHistory: true });
+    showAnswer(answer);
+    history.push({ role: "user", text: question });
+    history.push({ role: "model", text: answer });
+    if (history.length > 20) history = history.slice(-20);
+    setBusy(false);
+    input.focus();
+  });
+</script>

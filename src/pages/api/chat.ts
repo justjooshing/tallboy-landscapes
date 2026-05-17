@@ -2,7 +2,7 @@ export const prerender = false;
 
 // @ts-expect-error astro:env types not recognised outside .astro files
 import { GEMINI_API_KEY } from "astro:env/server";
-import { getJobs } from "../../lib/jobs/index";
+import { getJobs, getJobBySlug } from "../../lib/jobs/index";
 import { serializeJobsForContext, SYSTEM_PROMPT } from "../../lib/agent";
 import type { APIRoute } from "astro";
 
@@ -14,10 +14,72 @@ interface ChatMessage {
 interface ChatRequest {
   message: string;
   history?: ChatMessage[];
+  slug?: string;
 }
 
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent";
+
+// Module-level cache — persists for the Worker instance lifetime.
+const replyCache = new Map<string, string>();
+
+// Pre-warm these on first request so suggested buttons are always instant.
+const INTRO_SLUG = "canterbury-entrance-path";
+const PREWARM_QUESTIONS = [
+  "Where is this job located?",
+  "What materials were used in this job?",
+];
+let prewarmed = false;
+
+async function callGemini(context: string, message: string, history: ChatMessage[]): Promise<string> {
+  const contents = [
+    ...history.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
+    { role: "user", parts: [{ text: message }] },
+  ];
+
+  const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT(context) }] },
+      contents,
+      generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("Gemini error:", err);
+    throw new Error("Gemini unavailable");
+  }
+
+  const data = await res.json() as {
+    candidates?: Array<{ content: { parts: Array<{ text: string }> } }>;
+  };
+
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't generate a response.";
+}
+
+async function prewarm() {
+  if (prewarmed) return;
+  prewarmed = true;
+  try {
+    const job = await getJobBySlug(INTRO_SLUG);
+    if (!job) return;
+    const context = serializeJobsForContext([job]);
+    await Promise.all(
+      PREWARM_QUESTIONS.map(async q => {
+        const key = `${INTRO_SLUG}:${q.toLowerCase()}`;
+        if (replyCache.has(key)) return;
+        const reply = await callGemini(context, q, []);
+        replyCache.set(key, reply);
+      })
+    );
+  } catch (e) {
+    console.error("Prewarm failed:", e);
+    prewarmed = false; // retry on next request
+  }
+}
 
 export const GET: APIRoute = () =>
   new Response(JSON.stringify({ ok: true }), { status: 200 });
@@ -30,43 +92,39 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400 });
   }
 
-  const { message, history = [] } = body;
+  const { message, history = [], slug } = body;
   if (!message?.trim()) {
     return new Response(JSON.stringify({ error: "Message required" }), { status: 400 });
   }
 
-  const jobs = await getJobs();
+  // Fire pre-warm in background on first request (don't block)
+  if (!prewarmed) prewarm().catch(console.error);
+
+  // Cache only single-turn requests (no history); multi-turn is too context-dependent
+  const cacheKey = history.length === 0
+    ? `${slug ?? "all"}:${message.trim().toLowerCase()}`
+    : null;
+
+  if (cacheKey && replyCache.has(cacheKey)) {
+    return new Response(JSON.stringify({ reply: replyCache.get(cacheKey) }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  console.log("Not in cache, calling Gemini with message:", message);
+
+  const job = slug ? await getJobBySlug(slug) : null;
+  const jobs = job ? [job] : await getJobs();
   const context = serializeJobsForContext(jobs);
 
-  const contents = [
-    ...history.map(m => ({
-      role: m.role,
-      parts: [{ text: m.text }],
-    })),
-    { role: "user", parts: [{ text: message }] },
-  ];
-
-  const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT(context) }] },
-      contents,
-      generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
-    }),
-  });
-
-  if (!geminiRes.ok) {
-    const err = await geminiRes.text();
-    console.error("Gemini error:", err);
+  let reply: string;
+  try {
+    reply = await callGemini(context, message, history);
+  } catch {
     return new Response(JSON.stringify({ error: "AI service unavailable" }), { status: 502 });
   }
 
-  const data = await geminiRes.json() as {
-    candidates?: Array<{ content: { parts: Array<{ text: string }> } }>;
-  };
-
-  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't generate a response.";
+  if (cacheKey) replyCache.set(cacheKey, reply);
 
   return new Response(JSON.stringify({ reply }), {
     status: 200,
