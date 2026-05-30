@@ -221,6 +221,44 @@ const { stripCount = 10 } = Astro.props;
 </style>
 
 <script is:inline define:vars={{ stripCount }}>
+  // ─── Audio playback (lazy loaded) ──────────────────────
+  let mowerAudio = null;
+  let rocketAudio = null;
+
+  function createAudioElement(src, { loop = false, volume = 1 } = {}) {
+    const audio = new Audio(src);
+    audio.loop = loop;
+    audio.volume = volume;
+    return audio;
+  }
+
+  function playAudio(audio) {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  }
+
+  function initAudio() {
+    if (!mowerAudio) mowerAudio = createAudioElement("/sounds/mower.mp3", { volume: 0.5 });
+    if (!rocketAudio) rocketAudio = createAudioElement("/sounds/rocket.mp3", { volume: 0.6 });
+  }
+
+  function startMowerRumble() {
+    initAudio();
+    playAudio(mowerAudio);
+  }
+
+  function stopMowerRumble() {
+    if (mowerAudio) {
+      mowerAudio.pause();
+      mowerAudio.currentTime = 0;
+    }
+  }
+
+  function createRocketWhoosh() {
+    initAudio();
+    playAudio(rocketAudio);
+  }
+
   // ── Phase 1: Pullcord ─────────────────────────────────────
   const cordHandle   = document.getElementById("cord-handle");
   const cordLine     = document.getElementById("cord-line");
@@ -284,6 +322,7 @@ const { stripCount = 10 } = Astro.props;
     cordLine.style.height = "28px";
     if (pullDist >= PULL_TRIGGER && !mowStarted) {
       mowStarted = true;
+      startMowerRumble();
       // Cord is pulled — remove all window listeners, they're no longer needed
       window.removeEventListener("mousemove", handleCordMove);
       window.removeEventListener("touchmove", handleCordMove);
@@ -393,6 +432,7 @@ const { stripCount = 10 } = Astro.props;
       }
 
       setTimeout(() => {
+        createRocketWhoosh();
         SPEED_PX *= 2;
         isPaused = false;
       }, TRANSFORM_DURATION * 1000);
@@ -402,6 +442,7 @@ const { stripCount = 10 } = Astro.props;
       if (hasTransformed) return;
       hasTransformed = true;
       isPaused = true;
+      stopMowerRumble();
       mowerEl.classList.add("rocket");
       transformToRocket();
     };
@@ -434,6 +475,8 @@ const { stripCount = 10 } = Astro.props;
           row++;
 
           if (row >= stripCount) {
+            stopMowerRumble();
+            if (rocketAudio) rocketAudio.pause();
             mowerEl.style.display = "none";
             mowerEl.removeEventListener("click", handleMowerClick);
             mowerEl.classList.remove("mowing", "rocket");
