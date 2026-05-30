@@ -33,45 +33,90 @@
   <!-- Shadow under mower -->
   <ellipse cx="105" cy="132" rx="70" ry="6" fill="rgba(0,0,0,0.3)"/>
 
-  <!-- Grass discharge chute (rear left) -->
-  <path d="M 30 75 L 15 85 L 15 105 L 35 100 L 35 80 Z" fill="url(#grassGrad)" stroke="#2a5a18" stroke-width="1"/>
-  <path d="M 18 88 L 18 102" stroke="#3d7a28" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Grass discharge chute (rear left) → morphs to nose cone -->
+  <g id="mower-chute">
+    <path id="chute-body" d="M 30 75 L 15 85 L 15 105 L 35 100 L 35 80 Z" fill="url(#grassGrad)" stroke="#2a5a18" stroke-width="1">
+      <!-- Morph chute into pointed nose cone -->
+      <animate
+        id="chute-to-nose"
+        attributeName="d"
+        dur="0.8s"
+        fill="freeze"
+        begin="indefinite"
+        calcMode="spline"
+        keyTimes="0; 1"
+        keySplines="0.25 0.1 0.25 1"
+        from="M 30 75 L 15 85 L 15 105 L 35 100 L 35 80 Z"
+        to="M 25 52 L 0 70 L 0 70 L 25 88 L 25 52 Z"
+      />
+    </path>
+    <path id="chute-detail" d="M 18 88 L 18 102" stroke="#3d7a28" stroke-width="1" stroke-dasharray="2,2">
+      <!-- Fade out the grass detail line -->
+      <animate
+        id="chute-detail-fade"
+        attributeName="opacity"
+        dur="0.4s"
+        fill="freeze"
+        begin="indefinite"
+        from="1"
+        to="0"
+      />
+    </path>
+  </g>
 
-  <!-- Main deck — curved, realistic shape -->
+  <!-- Main deck — curved, realistic shape (morphs to rocket via SMIL) -->
   <path
-    d="M 40 70
-       Q 40 55, 70 50
-       L 150 50
-       Q 175 55, 175 70
-       L 175 90
-       Q 175 100, 150 102
-       L 55 102
-       Q 40 100, 40 90
-       Z"
+    id="mower-deck"
+    d="M 40 70 Q 40 55 70 50 L 150 50 Q 175 55 175 70 L 175 90 Q 175 100 150 102 L 55 102 Q 40 100 40 90 Z"
     fill="#d64040" stroke="#a02020" stroke-width="1.5"
-  />
+  >
+    <!-- SMIL animation: deck morphs to rocket (pointy nose left, angular back right) -->
+    <animate
+      id="deck-to-rocket"
+      attributeName="d"
+      dur="0.8s"
+      fill="freeze"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0; 1"
+      keySplines="0.25 0.1 0.25 1"
+      from="M 40 70 Q 40 55 70 50 L 150 50 Q 175 55 175 70 L 175 90 Q 175 100 150 102 L 55 102 Q 40 100 40 90 Z"
+      to="M 10 70 Q 25 48 65 46 L 160 46 Q 175 48 175 70 L 175 70 Q 175 92 160 94 L 65 94 Q 25 92 10 70 Z"
+    />
+    <animate
+      id="deck-color-change"
+      attributeName="fill"
+      dur="0.75s"
+      fill="freeze"
+      begin="indefinite"
+      from="#d64040"
+      to="#ff3333"
+    />
+  </path>
 
   <!-- Deck highlight strip -->
-  <path d="M 50 58 L 160 58" stroke="#e86060" stroke-width="2" stroke-linecap="round"/>
+  <path id="mower-deck-highlight" d="M 50 58 L 160 58" stroke="#e86060" stroke-width="2" stroke-linecap="round"/>
 
   <!-- Deck label area -->
-  <rect x="85" y="62" width="45" height="14" rx="2" fill="#b03030"/>
-  <text x="107" y="73" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">MOWER</text>
+  <g id="mower-deck-label">
+    <rect x="85" y="62" width="45" height="14" rx="2" fill="#b03030"/>
+    <text x="107" y="73" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">MOWER</text>
+  </g>
 
   <!-- Blade housing (underneath deck) -->
-  <ellipse cx="107" cy="100" rx="55" ry="8" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+  <ellipse id="mower-blade-housing" cx="107" cy="100" rx="55" ry="8" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
 
   <!-- Front axle -->
-  <rect x="145" y="98" width="25" height="6" rx="2" fill="url(#metalSheen)"/>
+  <rect id="mower-front-axle" x="145" y="98" width="25" height="6" rx="2" fill="url(#metalSheen)"/>
 
   <!-- Rear axle -->
-  <rect x="45" y="98" width="25" height="6" rx="2" fill="url(#metalSheen)"/>
+  <rect id="mower-rear-axle" x="45" y="98" width="25" height="6" rx="2" fill="url(#metalSheen)"/>
 
-  <!-- Engine block -->
-  <rect x="120" y="28" width="45" height="30" rx="4" fill="url(#engineGrad)" stroke="#0a0a0a" stroke-width="1"/>
+  <!-- Engine block (becomes rocket nose in rocket mode) -->
+  <rect id="engine-block" x="120" y="28" width="45" height="30" rx="4" fill="url(#engineGrad)" stroke="#0a0a0a" stroke-width="1"/>
 
   <!-- Engine cooling fins -->
-  <g stroke="#4a4a4a" stroke-width="1">
+  <g id="mower-engine-parts" stroke="#4a4a4a" stroke-width="1">
     <line x1="125" y1="32" x2="160" y2="32"/>
     <line x1="125" y1="37" x2="160" y2="37"/>
     <line x1="125" y1="42" x2="160" y2="42"/>
@@ -79,31 +124,34 @@
     <line x1="125" y1="52" x2="160" y2="52"/>
   </g>
 
-  <!-- Air filter housing -->
-  <rect x="125" y="18" width="20" height="14" rx="3" fill="#222" stroke="#444" stroke-width="1"/>
-  <rect x="128" y="20" width="14" height="4" rx="1" fill="#333"/>
+  <!-- Mower engine components (hidden in rocket mode) -->
+  <g id="mower-engine-details">
+    <!-- Air filter housing -->
+    <rect x="125" y="18" width="20" height="14" rx="3" fill="#222" stroke="#444" stroke-width="1"/>
+    <rect x="128" y="20" width="14" height="4" rx="1" fill="#333"/>
 
-  <!-- Fuel tank -->
-  <path d="M 148 18 Q 155 15, 162 18 L 162 28 L 148 28 Z" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
-  <rect x="152" y="12" width="6" height="8" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="0.5"/>
+    <!-- Fuel tank -->
+    <path d="M 148 18 Q 155 15, 162 18 L 162 28 L 148 28 Z" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+    <rect x="152" y="12" width="6" height="8" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="0.5"/>
 
-  <!-- Spark plug cap -->
-  <rect x="138" y="22" width="6" height="10" rx="1" fill="#cc4400" stroke="#993300" stroke-width="0.5"/>
-  <path d="M 141 22 L 141 16" stroke="#333" stroke-width="1.5"/>
+    <!-- Spark plug cap -->
+    <rect x="138" y="22" width="6" height="10" rx="1" fill="#cc4400" stroke="#993300" stroke-width="0.5"/>
+    <path d="M 141 22 L 141 16" stroke="#333" stroke-width="1.5"/>
 
-  <!-- Muffler -->
-  <ellipse cx="170" cy="45" rx="8" ry="5" fill="#3a3a3a" stroke="#2a2a2a" stroke-width="1"/>
-  <ellipse cx="178" cy="45" rx="3" ry="4" fill="#1a1a1a"/>
+    <!-- Muffler -->
+    <ellipse cx="170" cy="45" rx="8" ry="5" fill="#3a3a3a" stroke="#2a2a2a" stroke-width="1"/>
+    <ellipse cx="178" cy="45" rx="3" ry="4" fill="#1a1a1a"/>
 
-  <!-- Ripcord housing (on engine, angled toward handle) -->
-  <circle cx="155" cy="42" r="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-  <circle cx="155" cy="42" r="3" fill="#1a1a1a"/>
+    <!-- Ripcord housing (on engine, angled toward handle) -->
+    <circle cx="155" cy="42" r="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <circle cx="155" cy="42" r="3" fill="#1a1a1a"/>
 
-  <!-- Handle mount plate -->
-  <rect x="165" y="48" width="12" height="18" rx="2" fill="#333" stroke="#222" stroke-width="1"/>
+    <!-- Handle mount plate -->
+    <rect x="165" y="48" width="12" height="18" rx="2" fill="#333" stroke="#222" stroke-width="1"/>
+  </g>
 
   <!-- Handle — tubular, angled up and back -->
-  <g stroke-linecap="round" stroke-linejoin="round">
+  <g id="mower-handle" stroke-linecap="round" stroke-linejoin="round">
     <!-- Lower handle tubes -->
     <path d="M 170 52 L 195 30" stroke="#555" stroke-width="5"/>
     <path d="M 170 60 L 195 38" stroke="#555" stroke-width="5"/>
@@ -119,13 +167,13 @@
 
     <!-- Bail bar (safety lever) -->
     <path d="M 195 26 Q 207 15, 218 26" stroke="#777" stroke-width="2" fill="none"/>
+
+    <!-- Throttle/controls on handle -->
+    <rect x="196" y="30" width="8" height="5" rx="1" fill="#d64040" stroke="#a02020" stroke-width="0.5"/>
   </g>
 
-  <!-- Throttle/controls on handle -->
-  <rect x="196" y="30" width="8" height="5" rx="1" fill="#d64040" stroke="#a02020" stroke-width="0.5"/>
-
   <!-- Left wheel (rear) — larger -->
-  <g>
+  <g id="mower-wheel-left">
     <circle cx="58" cy="110" r="22" fill="url(#tread)" stroke="#333" stroke-width="2"/>
     <circle cx="58" cy="110" r="16" fill="none" stroke="#2a2a2a" stroke-width="3"/>
     <circle cx="58" cy="110" r="8" fill="#3a3a3a" stroke="#555" stroke-width="1.5"/>
@@ -140,7 +188,7 @@
   </g>
 
   <!-- Right wheel (front) — slightly smaller -->
-  <g>
+  <g id="mower-wheel-right">
     <circle cx="158" cy="112" r="18" fill="url(#tread)" stroke="#333" stroke-width="2"/>
     <circle cx="158" cy="112" r="13" fill="none" stroke="#2a2a2a" stroke-width="2.5"/>
     <circle cx="158" cy="112" r="6" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
@@ -155,6 +203,33 @@
   </g>
 
   <!-- Height adjustment lever (front) -->
-  <path d="M 168 95 L 175 85" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="175" cy="85" r="3" fill="#444"/>
+  <g id="mower-height-lever">
+    <path d="M 168 95 L 175 85" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="175" cy="85" r="3" fill="#444"/>
+  </g>
+
+  <!-- Rocket fins (hidden by default, shown in rocket mode) -->
+  <g id="rocket-fins" opacity="0">
+    <!-- Top fin -->
+    <path d="M 140 45 L 155 20 L 145 50 Z" fill="#dd2222" stroke="#992222" stroke-width="1.5"/>
+    <!-- Bottom fin -->
+    <path d="M 140 95 L 155 120 L 145 90 Z" fill="#dd2222" stroke="#992222" stroke-width="1.5"/>
+  </g>
+
+  <!-- Rocket flames (hidden by default, shown in rocket mode) -->
+  <g id="rocket-flames" opacity="0">
+    <defs>
+      <linearGradient id="flameGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ffff00"/>
+        <stop offset="50%" stop-color="#ff8800"/>
+        <stop offset="100%" stop-color="#ff0000"/>
+      </linearGradient>
+    </defs>
+    <!-- Top flame -->
+    <path d="M 175 55 L 235 45 L 185 65 Z" fill="url(#flameGrad)" opacity="0.8"/>
+    <!-- Center flame -->
+    <path d="M 175 70 L 255 70 L 185 75 Z" fill="url(#flameGrad)" opacity="0.9"/>
+    <!-- Bottom flame -->
+    <path d="M 175 85 L 235 95 L 185 75 Z" fill="url(#flameGrad)" opacity="0.8"/>
+  </g>
 </svg>

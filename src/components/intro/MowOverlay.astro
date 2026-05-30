@@ -73,10 +73,40 @@ const { stripCount = 10 } = Astro.props;
 
   #mower-el {
     position: absolute;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 2;
     display: none;
-    width: 120px;
+    width: 180px;
+    cursor: pointer;
+  }
+
+  /* ═══ Secondary elements: retract INTO body center then disappear ═══ */
+  @keyframes retract-left {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    70%  { opacity: 0.8; transform: translate(40px, -15px) scale(0.5); }
+    100% { opacity: 0; transform: translate(50px, -20px) scale(0.3); }
+  }
+  @keyframes retract-right {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    70%  { opacity: 0.8; transform: translate(-40px, -15px) scale(0.5); }
+    100% { opacity: 0; transform: translate(-50px, -20px) scale(0.3); }
+  }
+  @keyframes retract-center {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    70%  { opacity: 0.8; transform: translate(0, -10px) scale(0.5); }
+    100% { opacity: 0; transform: translate(0, -15px) scale(0.3); }
+  }
+
+  /* ═══ Fins emerge OUT ═══ */
+  @keyframes fins-emerge {
+    0%   { opacity: 0; transform: scale(0.3); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ═══ Flames ignite — static position, just fade in ═══ */
+  @keyframes flames-ignite {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
   }
 
   #mower-el svg {
@@ -122,6 +152,7 @@ const { stripCount = 10 } = Astro.props;
   }
 
   #mower-static.shake { animation: mower-shake 0.5s ease; }
+  #mower-el.mowing { animation: mower-shake 0.15s infinite; }
 
   @keyframes mower-shake {
     0%   { transform: translateX(0) rotate(0deg); }
@@ -253,6 +284,11 @@ const { stripCount = 10 } = Astro.props;
     cordLine.style.height = "28px";
     if (pullDist >= PULL_TRIGGER && !mowStarted) {
       mowStarted = true;
+      // Cord is pulled — remove all window listeners, they're no longer needed
+      window.removeEventListener("mousemove", handleCordMove);
+      window.removeEventListener("touchmove", handleCordMove);
+      window.removeEventListener("mouseup", onRelease);
+      window.removeEventListener("touchend", onRelease);
       mowerStatic.classList.add("shake");
       mowerStatic.addEventListener("animationend", () => {
         mowerStatic.classList.remove("shake");
@@ -273,23 +309,111 @@ const { stripCount = 10 } = Astro.props;
   }
 
   function runMower() {
-    const SPEED_PX = 6; // pixels per frame — consistent feel across screen sizes
+    let SPEED_PX = 6; // pixels per frame — consistent feel across screen sizes
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
     const stripH = viewportH / stripCount;
 
-    let row        = 0;
-    let xPos       = 0; // pixels from left
-    let goingRight = true;
+    let row            = 0;
+    let xPos           = 0;
+    let goingRight     = true;
+    let isPaused       = false;
+    let hasTransformed = false;
 
-    const mowerW = 120; // fixed width matches CSS
-    const mowerH = mowerW * (140 / 240); // aspect ratio from viewBox
+    const mowerW  = 180; // wider hitbox for clicking while mowing
+    const mowerH  = mowerW * (140 / 240); // aspect ratio from viewBox
+    const mowerSvg = mowerEl.querySelector("svg");
+
+    mowerEl.classList.add("mowing");
+
+    const applyRetract = (els, animName, duration, delay) => {
+      els.forEach(el => {
+        if (!el) return;
+        el.style.transformOrigin = "center center";
+        el.style.animation = `${animName} ${duration} ease-in forwards`;
+        el.style.animationDelay = delay;
+      });
+    };
+
+    const transformToRocket = () => {
+      if (!mowerSvg) return;
+
+      mowerEl.classList.remove("mowing");
+
+      const TRANSFORM_DURATION = 1.5;
+      const retractDelay    = `${TRANSFORM_DURATION * 0.2}s`;
+      const retractDuration = `${TRANSFORM_DURATION * 0.4}s`;
+      const finsDelay       = `${TRANSFORM_DURATION * 0.5}s`;
+      const finsDuration    = `${TRANSFORM_DURATION * 0.3}s`;
+
+      const parts = {
+        handle:       mowerSvg.getElementById("mower-handle"),
+        fins:         mowerSvg.getElementById("rocket-fins"),
+        flames:       mowerSvg.getElementById("rocket-flames"),
+        deck:         mowerSvg.getElementById("mower-deck"),
+        wheelLeft:    mowerSvg.getElementById("mower-wheel-left"),
+        wheelRight:   mowerSvg.getElementById("mower-wheel-right"),
+        chute:        mowerSvg.getElementById("mower-chute"),
+        lever:        mowerSvg.getElementById("mower-height-lever"),
+        engineBlock:  mowerSvg.getElementById("engine-block"),
+        engineParts:  mowerSvg.getElementById("mower-engine-parts"),
+        engineDetails:mowerSvg.getElementById("mower-engine-details"),
+        bladeHousing: mowerSvg.getElementById("mower-blade-housing"),
+        frontAxle:    mowerSvg.getElementById("mower-front-axle"),
+        rearAxle:     mowerSvg.getElementById("mower-rear-axle"),
+        deckHighlight:mowerSvg.getElementById("mower-deck-highlight"),
+        deckLabel:    mowerSvg.getElementById("mower-deck-label"),
+      };
+
+      // SVG stacks by document order — reorder so deck → nose → label render on top
+      if (parts.deck)     mowerSvg.appendChild(parts.deck);
+      if (parts.chute)    mowerSvg.appendChild(parts.chute);
+      if (parts.deckLabel)mowerSvg.appendChild(parts.deckLabel);
+
+      mowerSvg.getElementById("deck-to-rocket")?.beginElement();
+      mowerSvg.getElementById("deck-color-change")?.beginElement();
+      mowerSvg.getElementById("chute-to-nose")?.beginElement();
+      mowerSvg.getElementById("chute-detail-fade")?.beginElement();
+
+      applyRetract([parts.wheelLeft, parts.rearAxle],                                         "retract-right",  retractDuration, retractDelay);
+      applyRetract([parts.wheelRight, parts.handle, parts.lever, parts.frontAxle],            "retract-left",   retractDuration, retractDelay);
+      applyRetract([parts.engineBlock, parts.engineParts, parts.engineDetails,
+                    parts.bladeHousing, parts.deckHighlight],                                  "retract-center", retractDuration, retractDelay);
+
+      if (parts.fins) {
+        parts.fins.style.transformOrigin = "right center";
+        parts.fins.style.animation = `fins-emerge ${finsDuration} ease-out forwards`;
+        parts.fins.style.animationDelay = finsDelay;
+      }
+
+      // Flames ignite right as the rocket resumes movement
+      if (parts.flames) {
+        parts.flames.style.animation = `flames-ignite 0.3s ease-out forwards`;
+        parts.flames.style.animationDelay = `${TRANSFORM_DURATION}s`;
+      }
+
+      setTimeout(() => {
+        SPEED_PX *= 2;
+        isPaused = false;
+      }, TRANSFORM_DURATION * 1000);
+    };
+
+    const handleMowerClick = () => {
+      if (hasTransformed) return;
+      hasTransformed = true;
+      isPaused = true;
+      mowerEl.classList.add("rocket");
+      transformToRocket();
+    };
+
+    mowerEl.addEventListener("click", handleMowerClick);
 
     const positionMower = () => {
       const x = goingRight ? xPos : viewportW - xPos;
-      mowerEl.style.left      = `${x - mowerW / 2}px`;
-      mowerEl.style.top       = `${(row + 1) * stripH - mowerH}px`;
-      mowerEl.style.transform = goingRight ? "scaleX(-1)" : "scaleX(1)";
+      mowerEl.style.left = `${x - mowerW / 2}px`;
+      mowerEl.style.top  = `${(row + 1) * stripH - mowerH}px`;
+      // Flip the SVG, not the container (shake animation uses transform on container)
+      if (mowerSvg) mowerSvg.style.transform = goingRight ? "scaleX(-1)" : "scaleX(1)";
     };
 
     const updateStrip = () => {
@@ -302,24 +426,29 @@ const { stripCount = 10 } = Astro.props;
     };
 
     const tick = () => {
-      xPos += SPEED_PX;
+      if (!isPaused) {
+        xPos += SPEED_PX;
 
-      if (xPos >= viewportW) {
-        strips[row].style.clipPath = "inset(0 0 0 100%)";
-        row++;
+        if (xPos >= viewportW) {
+          strips[row].style.clipPath = "inset(0 0 0 100%)";
+          row++;
 
-        if (row >= stripCount) {
-          mowerEl.style.display = "none";
-          overlay.classList.add("done");
-          return;
+          if (row >= stripCount) {
+            mowerEl.style.display = "none";
+            mowerEl.removeEventListener("click", handleMowerClick);
+            mowerEl.classList.remove("mowing", "rocket");
+            overlay.classList.add("done");
+            return;
+          }
+
+          goingRight = !goingRight;
+          xPos = 0;
         }
 
-        goingRight = !goingRight;
-        xPos = 0;
+        updateStrip();
+        positionMower();
       }
 
-      updateStrip();
-      positionMower();
       requestAnimationFrame(tick);
     };
 
