@@ -11,14 +11,18 @@
     "start": "node dist/server/entry.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.12",
-    "@astrojs/sitemap": "^3.7.0",
-    "@emailjs/browser": "^4.4.1",
-    "@unpic/astro": "^1.0.2",
-    "astro": "5.16.6",
-    "contentful": "11.10.1"
+    "@astrojs/cloudflare": "^14.4.2",
+    "@astrojs/sitemap": "^3.7.4",
+    "@emailjs/browser": "^5.0.3",
+    "@unpic/core": "^1.0.3",
+    "astro": "7.4.2",
+    "contentful": "11.12.10"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
+    "typescript": "6.0.3",
+    "wrangler": "^4.152.0"
+  },
+  "engines": {
+    "node": ">=24.22.1"
   }
 }
