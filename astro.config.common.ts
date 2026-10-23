@@ -1,6 +1,5 @@
 import { defineConfig, envField } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
-import { imageService } from "@unpic/astro/service";
 import sitemap from "@astrojs/sitemap";
 
 interface ConfigProps {
@@ -13,13 +12,7 @@ export const setupConfig = ({ output, site }: ConfigProps) =>
     site,
     output,
     integrations: [sitemap()],
-    adapter: cloudflare({ imageService: "compile" }),
-    image: {
-      service: imageService({
-        fallbackService: "contentful",
-        placeholder: "blurhash",
-      }),
-    },
+    adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
     env: {
       validateSecrets: true,
       schema: {
